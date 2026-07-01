@@ -1,0 +1,308 @@
+/*
+ * Brain section (768px+ only).
+ * An animated ASCII "fog" is drawn over the brain image, sampled from the
+ * image so it sits on the brain. The pointer clears a soft circle of fog
+ * (revealing the brain), and clicking an icon clears a slightly bigger circle
+ * and pops out that icon's card (cloned from .mobile-cards). Clicking outside
+ * closes the card and the fog flows back. Below 768px nothing runs — the
+ * markup is plain static cards.
+ */
+(function () {
+	var wrap = document.querySelector('.brain__wrapper');
+	if (!wrap) return;
+	var mq = window.matchMedia('(min-width: 768px)');
+
+	var media = wrap.querySelector('.media');
+	var brainImg = media && media.querySelector(':scope > img');
+	var iconsWrap = media && media.querySelector('.icons__wrapper');
+	var icons = iconsWrap ? Array.prototype.slice.call(iconsWrap.querySelectorAll('.icon')) : [];
+	var cardTemplates = Array.prototype.slice.call(wrap.querySelectorAll('.mobile-cards .elem__card'));
+	if (!media || !brainImg || !icons.length) return;
+
+	var CHARS = '01<>/\\|=+*#%$&{}[]?:;.ABCDEFidox'.split('');
+	var CELL = 15;          // px grid
+	var GREEN = '120,255,170';
+
+	var canvas = document.createElement('canvas');
+	canvas.className = 'brain-fog';
+	canvas.setAttribute('aria-hidden', 'true');
+	media.insertBefore(canvas, brainImg.nextSibling);
+	var ctx = canvas.getContext('2d');
+
+	// popup layer
+	var pop = document.createElement('div');
+	pop.className = 'brain-cards-layer';
+	media.appendChild(pop);
+
+	var W = 0, H = 0, COLS = 0, ROWS = 0, CELLX = CELL, CELLY = CELL;
+	var cells = null;       // {x,y,b,ch,seed} for lit cells only
+	var ready = false;
+	var raf = 0, last = 0, t = 0, inView = true;
+
+	// reveal holes — everything eases, nothing snaps
+	var mouse = { tx: -9999, ty: -9999, on: false };
+	var msX = -9999, msY = -9999;          // smoothed pointer
+	var mouseStrength = 0, iconStrength = 0, iconTarget = 0;
+	var MOUSE_R = 135;
+	var ICON_R = 175;
+	var iconHole = null;    // {x,y} of the open icon (canvas space)
+	var openIdx = -1, openCard = null;
+
+	var sampler = document.createElement('canvas');
+	var sctx = sampler.getContext('2d');
+	// low-res veil that is upscaled (bilinear) into a soft, blurred dark haze
+	// under the glyphs so the bright code reads with contrast.
+	var veil = document.createElement('canvas');
+	var vctx = veil.getContext('2d');
+	var veilData = null;
+	var tmp = document.createElement('canvas');     // tiny buffer: downscale->upscale = cheap heavy blur
+	var tctx = tmp.getContext('2d');
+
+	function build() {
+		var r = brainImg.getBoundingClientRect();
+		W = Math.round(r.width); H = Math.round(r.height);
+		if (!W || !H) return;
+		canvas.width = W; canvas.height = H;
+		// overlay the image exactly, whatever size it is at this breakpoint
+		var mr = media.getBoundingClientRect();
+		canvas.style.width = r.width + 'px';
+		canvas.style.height = r.height + 'px';
+		canvas.style.left = (r.left - mr.left) + 'px';
+		canvas.style.top = (r.top - mr.top) + 'px';
+
+		// RGB grid: prefer the inlined data (works from file:// without tainting
+		// the canvas); otherwise sample the image at runtime. Each cell keeps the
+		// brain's local colour so the code picks up the brain's hues.
+		var gw, gh, rgb;
+		var inl = window.__BRAIN_RGB;
+		if (inl) {
+			gw = inl.w; gh = inl.h;
+			var bin = atob(inl.b64);
+			rgb = new Uint8Array(gw * gh * 3);
+			for (var z = 0; z < rgb.length; z++) rgb[z] = bin.charCodeAt(z);
+		} else {
+			gw = Math.ceil(W / CELL); gh = Math.ceil(H / CELL);
+			sampler.width = gw; sampler.height = gh;
+			try {
+				sctx.drawImage(brainImg, 0, 0, gw, gh);
+				var data = sctx.getImageData(0, 0, gw, gh).data;
+				rgb = new Uint8Array(gw * gh * 3);
+				for (var z2 = 0; z2 < gw * gh; z2++) { rgb[z2 * 3] = data[z2 * 4]; rgb[z2 * 3 + 1] = data[z2 * 4 + 1]; rgb[z2 * 3 + 2] = data[z2 * 4 + 2]; }
+			} catch (e) { return; }
+		}
+		COLS = gw; ROWS = gh;
+		CELLX = W / COLS; CELLY = H / ROWS;
+		veil.width = COLS; veil.height = ROWS;
+		veilData = vctx.createImageData(COLS, ROWS);
+		tmp.width = 32; tmp.height = Math.max(8, Math.round(32 * ROWS / COLS));
+		ctx.font = '700 ' + Math.round(Math.max(CELLX, CELLY)) + 'px ui-monospace, Menlo, Consolas, monospace';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+
+		var out = [];
+		var bottomCut = ROWS * 0.82;                          // skip the reflection under the brain
+		for (var j = 0; j < ROWS; j++) {
+			if (j > bottomCut) break;
+			for (var i = 0; i < COLS; i++) {
+				var p = (j * COLS + i) * 3;
+				var R = rgb[p], G = rgb[p + 1], B = rgb[p + 2];
+				var lum = (R * 0.3 + G * 0.6 + B * 0.1) / 255;
+				if (lum < 0.28) continue;                       // the brain only, not the dim base/reflection
+				// brighten the local colour and push it green so the glyphs pop
+				var boost = 1.7;
+				out.push({
+					i: i, j: j,
+					b: Math.min(1, (lum - 0.22) * 1.9),
+					r: Math.min(255, Math.round(R * boost + 30)),
+					g: Math.min(255, Math.round(G * boost + 70)),
+					bl: Math.min(255, Math.round(B * boost + 30)),
+					seed: (i * 37 + j * 101 + i * j) % CHARS.length,
+					ph: ((i * 13 + j * 29) % 100) / 100 * Math.PI * 2
+				});
+			}
+		}
+		cells = out;
+		ready = true;
+	}
+
+	// soft circular clear; s = how strongly this hole is active (eased 0..1)
+	function holeAt(x, y, hx, hy, R, s) {
+		if (s <= 0.01) return 1;
+		var d = Math.hypot(x - hx, y - hy);
+		var e;                                                // 1 = fog, 0 = clear
+		if (d >= R) e = 1;
+		else if (d <= R * 0.55) e = 0;
+		else { var u = (d - R * 0.55) / (R * 0.45); e = u * u * (3 - 2 * u); }   // smoothstep edge
+		return 1 - (1 - e) * s;                               // ease the hole in/out
+	}
+
+	function frame(ts) {
+		if (!inView || document.hidden) { raf = 0; return; }
+		raf = requestAnimationFrame(frame);
+		if (!ready) return;
+		var dt = last ? Math.min(ts - last, 60) : 16;
+		if (ts - last < 24) return;                           // ~40fps cap
+		last = ts;
+		t += dt * 0.001;
+
+		// ease the pointer position and all reveal strengths — no snapping
+		if (mouse.on) {
+			if (msX < -9000) { msX = mouse.tx; msY = mouse.ty; }
+			msX += (mouse.tx - msX) * 0.22;
+			msY += (mouse.ty - msY) * 0.22;
+		}
+		mouseStrength += ((mouse.on ? 1 : 0) - mouseStrength) * 0.12;
+		iconStrength += (iconTarget - iconStrength) * 0.12;
+		if (iconTarget === 0 && iconStrength < 0.02) iconHole = null;
+
+		var useMouse = mouseStrength > 0.01;
+		var n, c, x, y, hf;
+
+		// pass 1 — build the low-res dark veil (reveal eats holes into it)
+		var vd = veilData.data;
+		for (n = 0; n < cells.length; n++) {
+			c = cells[n];
+			x = c.i * CELLX + CELLX / 2;
+			y = c.j * CELLY + CELLY / 2;
+			hf = 1;
+			if (useMouse) hf = holeAt(x, y, msX, msY, MOUSE_R, mouseStrength);
+			if (iconHole && iconStrength > 0.01) hf = Math.min(hf, holeAt(x, y, iconHole.x, iconHole.y, ICON_R, iconStrength));
+			c.hf = hf;
+			var vi = (c.j * COLS + c.i) * 4;
+			vd[vi] = 3; vd[vi + 1] = 12; vd[vi + 2] = 8;
+			vd[vi + 3] = Math.round(Math.min(1, c.b * 1.15) * hf * 200);  // soft dark backing, cleared in holes
+		}
+		vctx.putImageData(veilData, 0, 0);
+
+		// downscale the veil to a tiny buffer then upscale it — a strong, cheap
+		// blur (no costly ctx.filter) for the dark haze under the glyphs
+		tctx.clearRect(0, 0, tmp.width, tmp.height);
+		tctx.imageSmoothingEnabled = true;
+		tctx.drawImage(veil, 0, 0, COLS, ROWS, 0, 0, tmp.width, tmp.height);
+		ctx.clearRect(0, 0, W, H);
+		ctx.imageSmoothingEnabled = true;
+		ctx.drawImage(tmp, 0, 0, tmp.width, tmp.height, 0, 0, W, H);
+
+		// pass 2 — bright glyphs on top
+		ctx.shadowColor = 'rgba(0,255,150,0.9)';
+		ctx.shadowBlur = 5;
+		for (n = 0; n < cells.length; n++) {
+			c = cells[n];
+			hf = c.hf;
+			if (hf <= 0.04) continue;
+			x = c.i * CELLX + CELLX / 2;
+			y = c.j * CELLY + CELLY / 2;
+			var wave = 0.5 + 0.5 * Math.sin(t * 1.4 + c.ph + c.i * 0.18 + c.j * 0.12);
+			var a = c.b * (0.62 + 0.38 * wave) * hf;          // high contrast — glyphs stay bright
+			if (a <= 0.04) continue;
+			var ch = CHARS[(c.seed + ((t * 0.55 + c.ph) | 0)) % CHARS.length];
+			ctx.fillStyle = 'rgba(' + c.r + ',' + c.g + ',' + c.bl + ',' + a.toFixed(3) + ')';
+			ctx.fillText(ch, x, y);
+		}
+		ctx.shadowBlur = 0;
+	}
+
+	function start() { if (!raf && inView && !document.hidden) raf = requestAnimationFrame(frame); }
+	function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+	// ---- pointer reveal ----
+	media.addEventListener('mousemove', function (e) {
+		var r = canvas.getBoundingClientRect();
+		var sx = r.width ? canvas.width / r.width : 1;
+		var sy = r.height ? canvas.height / r.height : 1;
+		mouse.tx = (e.clientX - r.left) * sx;
+		mouse.ty = (e.clientY - r.top) * sy;
+		mouse.on = true;
+	});
+	media.addEventListener('mouseleave', function () { mouse.on = false; });
+
+	// ---- icon cards ----
+	function iconCanvasPos(icon) {
+		var ir = icon.getBoundingClientRect();
+		var cr = canvas.getBoundingClientRect();
+		var sx = cr.width ? canvas.width / cr.width : 1;
+		var sy = cr.height ? canvas.height / cr.height : 1;
+		return {
+			x: (ir.left + ir.width / 2 - cr.left) * sx,
+			y: (ir.top + ir.height / 2 - cr.top) * sy
+		};
+	}
+
+	function closeCard() {
+		if (openCard) { openCard.classList.remove('show'); var oc = openCard; setTimeout(function () { if (oc.parentNode) oc.parentNode.removeChild(oc); }, 260); }
+		openCard = null; openIdx = -1; iconTarget = 0;   // hole eases shut, then frame() clears it
+		icons.forEach(function (ic) { ic.classList.remove('active'); });
+	}
+
+	function openCardFor(idx) {
+		closeCard();
+		var tpl = cardTemplates[idx];
+		if (!tpl) return;
+		var icon = icons[idx];
+		var card = tpl.cloneNode(true);
+		card.classList.add('brain-card');
+		pop.appendChild(card);
+		icon.classList.add('active');
+
+		// position next to the icon, on the side away from the media centre,
+		// so the card never sits on top of the icon
+		var mr = media.getBoundingClientRect();
+		var ir = icon.getBoundingClientRect();
+		var iconCX = ir.left + ir.width / 2 - mr.left;
+		var iconCY = ir.top + ir.height / 2 - mr.top;
+		var cardW = card.offsetWidth || 260;
+		var cardH = card.offsetHeight || 120;
+		var gap = 18;
+		var left, top;
+		// horizontal side
+		if (iconCX < mr.width / 2) left = iconCX + ir.width / 2 + gap;            // icon on left -> card to the right
+		else left = iconCX - ir.width / 2 - gap - cardW;                          // icon on right -> card to the left
+		top = iconCY - cardH / 2;
+		// clamp inside the media box
+		left = Math.max(10, Math.min(left, mr.width - cardW - 10));
+		top = Math.max(10, Math.min(top, mr.height - cardH - 10));
+		card.style.left = left + 'px';
+		card.style.top = top + 'px';
+
+		iconHole = iconCanvasPos(icon);
+		iconTarget = 1;
+		openIdx = idx;
+		openCard = card;
+		requestAnimationFrame(function () { card.classList.add('show'); });
+	}
+
+	icons.forEach(function (icon, idx) {
+		icon.style.cursor = 'pointer';
+		icon.addEventListener('click', function (e) {
+			e.stopPropagation();
+			if (openIdx === idx) closeCard();
+			else openCardFor(idx);
+		});
+	});
+	document.addEventListener('click', function (e) {
+		if (openIdx < 0) return;
+		if (openCard && openCard.contains(e.target)) return;
+		closeCard();
+	});
+	window.addEventListener('resize', function () {
+		closeCard();
+		clearTimeout(window.__brainRT);
+		window.__brainRT = setTimeout(build, 150);
+	});
+
+	if ('IntersectionObserver' in window) {
+		new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) start(); else stop(); }, { rootMargin: '200px' }).observe(wrap);
+	}
+
+	function enable() {
+		if (brainImg.complete) build(); else brainImg.addEventListener('load', build);
+		// brainImg may already be decoded; also rebuild on window load for safety
+		window.addEventListener('load', build);
+		start();
+	}
+	function disable() { stop(); closeCard(); ctx && ctx.clearRect(0, 0, W, H); }
+
+	if (mq.matches) enable();
+	(mq.addEventListener ? mq.addEventListener('change', onMq) : mq.addListener(onMq));
+	function onMq() { if (mq.matches) enable(); else disable(); }
+})();

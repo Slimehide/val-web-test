@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/slick.css">
+	<link rel="stylesheet" href="css/slick-theme.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="preconnect" href="https://code.jquery.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div class="overlay"></div>
+	<header>
+		<div class="container">
+			<div class="outer__header">
+				<div class="left">
+					<a href="homepage.html">
+						<img src="img/head-logo.svg" alt="head">
+					</a>
+				</div>
+				<div class="right">
+					<div class="menu">
+						<ul>
+							<li>
+								<a href="video.html">Campaigns <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="video.html"><span><img src="img/campaign-1.svg" alt="campaign"></span> Video</a></li>
+										<li><a href="graphic-design.html"><span><img src="img/campaign-2.svg" alt="campaign"></span> Graphic Design</a></li>
+										<li><a href="email.html"><span><img src="img/campaign-3.svg" alt="campaign"></span> Email</a></li>
+										<li><a href="funnel.html"><span><img src="img/campaign-4.svg" alt="campaign"></span> Funnel</a></li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="ai-brain.html">Management <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="ai-brain.html"><span><img src="img/management-1.svg" alt="campaign"></span> AI Brain</a></li>
+										<li><a href="valiant-omniscient.html"><span><img src="img/management-2.svg" alt="campaign"></span> Management</a></li>
+										<li><a href="strategy.html"><span><img src="img/management-3.svg" alt="campaign"></span> Strategy</a></li>
+										<li><a href="analytics.html"><span><img src="img/management-4.svg" alt="campaign"></span> Insights</a></li>
+										<li><a href="homepage.html"><span><img src="img/management-4.svg" alt="campaign"></span> Roadmap</a></li>
+									</ul>
+								</div>
+							</li>
+							<li><a href="professional-services.html">Industry <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown complex">
+									<div class="grid">
+										<ul>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-1.svg" alt="industry"></span>Professional services</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-2.svg" alt="industry"></span>CBD, cannabis</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-3.svg" alt="industry"></span>Coaching, consulting</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-4.svg" alt="industry"></span>Legal services</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-5.svg" alt="industry"></span>eCommerce, DTC</a></li>
+										</ul>
+
+										<ul>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-1.svg" alt="industry"></span>Education, learning</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-2.svg" alt="industry"></span>Technology, electronics</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-3.svg" alt="industry"></span>Real estate</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-4.svg" alt="industry"></span>Apparel, fashion</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-5.svg" alt="industry"></span>B2B services</a></li>
+										</ul>
+
+										<ul>
+											<li><a href="professional-services.html"><span><img src="img/industry-3-1.svg" alt="industry"></span>B2B SaaS</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-3-2.svg" alt="industry"></span>Gambling, betting</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-3-3.svg" alt="industry"></span>Finance, investing</a></li>
+										</ul>
+									</div>
+								</div>
+							</li>
+							<li><a href="compare-plans.html">Pricing</a></li>
+							<li>
+								<a href="resources-how-it-works.html">Resources <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="resources-how-it-works.html"><span><img src="img/resources-1.svg" alt="campaign"></span> How it works</a></li>
+										<li><a href="case-studies.html"><span><img src="img/resources-2.svg" alt="campaign"></span> Case studies</a></li>
+										<li><a href="reviews.html"><span><img src="img/resources-3.svg" alt="campaign"></span> Reviews</a></li>
+										<li><a href="contact.html"><span><img src="img/resources-4.svg" alt="campaign"></span> Help center</a></li>
+										<li><a href="compare-plans.html"><span><img src="img/resources-5.svg" alt="campaign"></span> Solutions deck</a></li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="about-us.html">Company <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="about-us.html"><span><img src="img/company-1.svg" alt="campaign"></span> About us</a></li>
+										<li><a href="about-us.html"><span><img src="img/company-2.svg" alt="campaign"></span> Careers</a></li>
+										<li><a href="team.html"><span><img src="img/company-3.svg" alt="campaign"></span> Team</a></li>
+										<li><a href="homepage.html"><span><img src="img/company-4.svg" alt="campaign"></span> Blog</a></li>
+										<li><a href="contact.html"><span><img src="img/company-5.svg" alt="campaign"></span> Contact</a></li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="btns">
+						<a href="contact.html" class="sign-in">Sign In</a>
+						<a href="compare-plans.html" class="regular-btn"><p>Start 14-Day Trial</p></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div class="about__hero">
+		<img src="img/about-back.webp" alt="about" decoding="async">
+		<div class="container">
+			<div class="outer__about">
+				<h1 class="h2-title bigger secondary-font">The Era of Dinosaur <br> Agencies is Over. <br> <span class="colored">The Age of AI is Here.</span></h1>
+				<p>Utilizing the power of artificial intelligence and years of niche experience, <br>Valiant redefines what growth looks like in the iGaming & Finance industries.</p>
+			</div>
+		</div>
+	</div>
+	<div class="our__story">
+		<div class="container">
+			<div class="outer__story">
+				<div class="desc">
+					<div class="icon-float icon-1">
+						<img src="img/ic-1.svg" alt="ic-3">
+					</div>
+					<div class="icon-float icon-2">
+						<img src="img/ic-2.svg" alt="ic-3">
+					</div>
+					<div class="icon-float icon-3">
+						<img src="img/ic-3.svg" alt="ic-3">
+					</div>
+					<span class="pre-title">our story</span>
+					<h2 class="h2-title secondary-font">Forged in Fire.  <span class="colored">Ready for Battle.</span></h2>
+					<div class="txt">
+						<p>In 2019, we founded Juiced.io, a software company in the make money online niche, and generated over two million in revenue. However, scaling was extremely difficult. Our biggest bottleneck? Talent.</p>
+						<p>After months of trying out freelancers and other marketers, nobody understood our niche well enough to get us results. We decided to take things into our own hands.</p>
+						<p>Fast-forward to today and we’ve built a team of the best marketing talent in the iGaming & Finance space: professional video editors, veteran advertising experts, dedicated email marketers, graphic designers, you name it.</p>
+						<p>Valiant is the elite team we always wanted to have when we first started Juiced. Businesses that work with us get results because we understand; We only succeed when you do.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="our__values">
+		<img src="img/values-gradient.svg" alt="values-gradient" class="gradient-values">
+		<div class="values-dots"><canvas aria-hidden="true"></canvas></div>
+		<div class="container">
+			<div class="outer__values">
+				<div class="left-values">
+					<span class="pre-title">our values</span>
+						<div class="values__block">
+							<div class="elem">
+								<div class="title">
+									<div class="media" style="background:url('img/services-back-1.webp')">
+										<img src="img/value-1.svg" alt="value">
+									</div>
+									<p>Pursuit of excellence</p>
+								</div>
+								<div class="desc">
+									<p>Good enough is the enemy of greatness. We obsess over every detail because the smallest difference separates winners from losers. Whether it's a single word in a script or a pixel in a design, perfection isn't optional — it's the standard that built $200M+ in client revenue.</p>
+								</div>
+							</div>
+
+
+							<div class="elem">
+								<div class="title">
+									<div class="media" style="background:url('img/services-back-2.webp')">
+										<img src="img/value-2.svg" alt="value">
+									</div>
+									<p>Lightning-speed execution</p>
+								</div>
+								<div class="desc">
+									<p>While others schedule meetings about meetings, we've already launched three campaigns. 9-day onboarding vs. industry standard 6-8 weeks. Same-day responses within 4 hours. Speed isn't just an advantage — it's our weapon against slow, bureaucratic agencies.</p>
+								</div>
+							</div>
+
+							<div class="elem">
+								<div class="title">
+									<div class="media" style="background:url('img/services-back-3.webp')">
+										<img src="img/value-3.svg" alt="value">
+									</div>
+									<p>obsession with results</p>
+								</div>
+								<div class="desc">
+									<p>We don't chase vanity metrics or participation trophies. 2x ROAS minimum. 40%+ email open rates. 2x view growth by month one. Every campaign is measured, optimized, and accountable because clients pay for results, not effort.</p>
+								</div>
+							</div>
+
+							<div class="elem">
+								<div class="title">
+									<div class="media" style="background:url('img/services-back-4.webp')">
+										<img src="img/value-4.svg" alt="value">
+									</div>
+									<p>unbreakable mentality</p>
+								</div>
+								<div class="desc">
+									<p>We win together or not at all. No egos, no politics, no corporate bullshit. From Miami yacht adventures to equity sharing, every crew member has skin in the game because revolutionizing marketing isn't a solo mission — it's a pirate raid.</p>
+								</div>
+							</div>
+						</div>
+				</div>
+				<div class="right-values">
+					<div class="inn">
+						<span class="secondary-font">our mission</span>
+						<div class="desc">
+							<p class="secondary-font">We're Not Building Another Agency. <br> We're Building the Future.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="our__team--slider">
+		<div class="team-dots"><canvas aria-hidden="true"></canvas></div>
+		<img src="img/team-back-gradient.webp" alt="team-back" decoding="async">
+		<div class="container">
+			<div class="outer__team--slider">
+				<span class="pre-title">our team</span>
+				<h2 class="h2-title secondary-font">Meet The Legends <br> <span class="colored secondary-font">Leading the Expedition</span></h2>
+				<div class="team__inner--slider">
+					<div class="slide">
+						<div class="elem">
+							<p>Dennis <br> Ho</p>
+							<div class="media">
+								<img src="img/team-member.webp" alt="team-member" decoding="async">
+							</div>
+							<div class="bottom__info">
+								<p>VP of Product</p>
+								<ul>
+									<li>
+										<a href="#">LinkedIn</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+							<p>Johnny <br>
+							Hoang</p>
+							<div class="media">
+								<img src="img/team-member.webp" alt="team-member" decoding="async">
+							</div>
+							<div class="bottom__info">
+								<p>Director of Engineering</p>
+								<ul>
+									<li>
+										<a href="#">LinkedIn</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Andrew <br>
+								Kissel</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>Director of AI Marketing</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Benjamin <br>
+								Hall</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>CEO, Founder</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Paul <br>
+								Evans</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>Chairman</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Andrew <br>
+								Kissel</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>Director of AI Marketing</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Killian <br>
+								Morand</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>Lead Designer</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+										<li>
+											<a href="#">Twitter</a>
+										</li>
+										<li>
+											<a href="#">Instagram</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Theo <br> Cockayne</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>Lead Copywriter</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+					<div class="slide">
+						<div class="elem">
+								<p>Louis <br> Kaufmann</p>
+								<div class="media">
+									<img src="img/team-member.webp" alt="team-member" decoding="async">
+								</div>
+								<div class="bottom__info">
+									<p>Lead Video Editor</p>
+									<ul>
+										<li>
+											<a href="#">LinkedIn</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="roadmap">
+		<div class="container">
+			<div class="outer__roadmap">
+				<span class="pre-title">roadmap</span>
+				<h2 class="h2-title">Title About <span class="colored">Roadmap</span></h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.</p>
+				<div class="map__box">
+					<div class="active__state"></div>
+					<div class="step current">
+						<div class="media">
+							<img src="img/roadmap-1.svg" alt="">
+						</div>
+						<p>Foundation & Quality</p>
+						<div class="date">
+							<p><span><img src="img/date-icon.svg" alt="date-icon"></span>Q2 2026</p>
+						</div>
+					</div>
+					<div class="dot filled"></div>
+					<div class="step">
+						<div class="media">
+							<img src="img/roadmap-2.svg" alt="">
+						</div>
+						<p>Intelligence & Automation</p>
+						<div class="date">
+							<p><span><img src="img/date-icon.svg" alt="date-icon"></span>Q3 2026</p>
+						</div>
+					</div>
+					<div class="dot"></div>
+					<div class="step">
+						<div class="media">
+							<img src="img/roadmap-3.svg" alt="">
+						</div>
+						<p>Depth & Custom Engine</p>
+						<div class="date">
+							<p><span><img src="img/date-icon.svg" alt="date-icon"></span>Q4 2026</p>
+						</div>
+					</div>
+					<div class="dot"></div>
+					<div class="step">
+						<div class="media">
+							<img src="img/roadmap-4.svg" alt="">
+						</div>
+						<p>Scale & Advanced Features</p>
+						<div class="date">
+							<p><span><img src="img/date-icon.svg" alt="date-icon"></span>Q1 2027</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="voyage__wrapper">
+		<canvas class="ascii-dots" aria-hidden="true"></canvas>
+		<div class="container">
+			<div class="outer__voyage">
+				<div class="desc">
+					<h2 class="h2-title">The Valiant <span class="colored">Voyage</span></h2>
+					<p>We're not just colleagues — we're pirates on a mission to take over the marketing world, one viral campaign and client victory at a time. From yacht adventures to rooftop strategy sessions, from watching clients transform their entire industries to celebrating breakthrough moments that redefine what's possible, this isn't just a job. It's an adventure for the valiant ones who said no to the 9-5 and chose something different, something extraordinary.</p>
+					<p>Freedom is core to life at Valiant: Want to take a Tuesday off to ride your bike through the desert? Go for it. We don't care when or where you work, but we do care that you're available when the crew needs you. This is freedom for the obsessed, if you don't live and breathe excellence, if you're not completely addicted to your craft, then Valiant isn't for you.</p>
+					<p>Every few months we set sail to new destinations for strategic planning and unforgettable adventures. Miami penthouse sunrises, yacht celebrations, and strategy sessions that feel more like treasure hunts than corporate retreats. Because when you're conquering finance, betting, and Web3 with a crew that shares equity, adventures, and victories, work becomes the expedition you've always dreamed of joining.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cta__wrapper cta-team">
+		<video src="video/atmosphere.mp4" loop playsinline muted autoplay></video>
+		<div class="container">
+			<div class="outer__cta">
+				<h2 class="secondary-font bigger h2-title">Your Next <br>
+				<span class="colored">Adventure Awaits</span></h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. <br> Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed.</p>
+				<div class="btns">
+					<a href="compare-plans.html" class="filled-btn">Get In Touch <span><img src="img/filled-arrow.svg" alt="filled"></span></a>
+					<a href="contact.html" class="outline-btn"><p>Submit Your Resume</p></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<div class="container">
+			<div class="outer__footer">
+				<div class="top__footer">
+					<div class="left-col">
+						<a href="homepage.html">
+							<img src="img/head-logo.svg" alt="head-logo">
+						</a>
+						<p>The world’s first fully autonomous <br>
+						AI marketing platform.</p>
+					</div>
+					<div class="right-col">
+						<div class="el">
+							<p>Product</p>
+							<ul>
+								<li><a href="#">Features</a></li>
+								<li><a href="compare-plans.html">Pricing</a></li>
+								<li><a href="resources-how-it-works.html">How It Works</a></li>
+								<li><a href="#">Integrations</a></li>
+								<li><a href="#">API Documentation</a></li>
+							</ul>
+						</div>
+
+						<div class="el">
+							<p>Company</p>
+							<ul>
+								<li><a href="about-us.html">About Us</a></li>
+								<li><a href="about-us.html">Careers</a></li>
+								<li><a href="#">Blog</a></li>
+								<li><a href="#">Press Kit</a></li>
+								<li><a href="contact.html">Contact</a></li>
+							</ul>
+						</div>
+
+
+						<div class="el">
+							<p>Resources</p>
+							<ul>
+								<li><a href="contact.html">Help Center</a></li>
+								<li><a href="case-studies.html">Case Studies</a></li>
+								<li><a href="#">Webinars</a></li>
+								<li><a href="#">Marketing Guide</a></li>
+								<li><a href="#">Community</a></li>
+							</ul>
+						</div>
+
+
+						<div class="el">
+							<p>Legal</p>
+							<ul>
+								<li><a href="#">Privacy</a></li>
+								<li><a href="#">Terms of Service</a></li>
+								<li><a href="#">Cookie Policy</a></li>
+								<li><a href="#">GDPR</a></li>
+								<li><a href="#">Security</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="bottom__footer">
+					<p>© 2026 ValiantAI. All rights reserved.</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script
+  src="https://code.jquery.com/jquery-3.7.1.js"
+  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  crossorigin="anonymous"></script>
+  	<script src="js/jquery.webticker.min.js"></script>
+  	<script src="js/slick.min.js"></script>
+	<script src="js/brain-data.js"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>

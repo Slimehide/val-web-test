@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/slick.css">
+	<link rel="stylesheet" href="css/slick-theme.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="preconnect" href="https://code.jquery.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div class="overlay"></div>
+	<header>
+		<div class="container">
+			<div class="outer__header">
+				<div class="left">
+					<a href="homepage.html">
+						<img src="img/head-logo.svg" alt="head">
+					</a>
+				</div>
+				<div class="right">
+					<div class="menu">
+						<ul>
+							<li>
+								<a href="video.html">Campaigns <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="video.html"><span><img src="img/campaign-1.svg" alt="campaign"></span> Video</a></li>
+										<li><a href="graphic-design.html"><span><img src="img/campaign-2.svg" alt="campaign"></span> Graphic Design</a></li>
+										<li><a href="email.html"><span><img src="img/campaign-3.svg" alt="campaign"></span> Email</a></li>
+										<li><a href="funnel.html"><span><img src="img/campaign-4.svg" alt="campaign"></span> Funnel</a></li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="ai-brain.html">Management <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="ai-brain.html"><span><img src="img/management-1.svg" alt="campaign"></span> AI Brain</a></li>
+										<li><a href="valiant-omniscient.html"><span><img src="img/management-2.svg" alt="campaign"></span> Management</a></li>
+										<li><a href="strategy.html"><span><img src="img/management-3.svg" alt="campaign"></span> Strategy</a></li>
+										<li><a href="analytics.html"><span><img src="img/management-4.svg" alt="campaign"></span> Insights</a></li>
+										<li><a href="homepage.html"><span><img src="img/management-4.svg" alt="campaign"></span> Roadmap</a></li>
+									</ul>
+								</div>
+							</li>
+							<li><a href="professional-services.html">Industry <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown complex">
+									<div class="grid">
+										<ul>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-1.svg" alt="industry"></span>Professional services</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-2.svg" alt="industry"></span>CBD, cannabis</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-3.svg" alt="industry"></span>Coaching, consulting</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-4.svg" alt="industry"></span>Legal services</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-1-5.svg" alt="industry"></span>eCommerce, DTC</a></li>
+										</ul>
+
+										<ul>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-1.svg" alt="industry"></span>Education, learning</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-2.svg" alt="industry"></span>Technology, electronics</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-3.svg" alt="industry"></span>Real estate</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-4.svg" alt="industry"></span>Apparel, fashion</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-2-5.svg" alt="industry"></span>B2B services</a></li>
+										</ul>
+
+										<ul>
+											<li><a href="professional-services.html"><span><img src="img/industry-3-1.svg" alt="industry"></span>B2B SaaS</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-3-2.svg" alt="industry"></span>Gambling, betting</a></li>
+											<li><a href="professional-services.html"><span><img src="img/industry-3-3.svg" alt="industry"></span>Finance, investing</a></li>
+										</ul>
+									</div>
+								</div>
+							</li>
+							<li><a href="compare-plans.html">Pricing</a></li>
+							<li>
+								<a href="resources-how-it-works.html">Resources <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="resources-how-it-works.html"><span><img src="img/resources-1.svg" alt="campaign"></span> How it works</a></li>
+										<li><a href="case-studies.html"><span><img src="img/resources-2.svg" alt="campaign"></span> Case studies</a></li>
+										<li><a href="reviews.html"><span><img src="img/resources-3.svg" alt="campaign"></span> Reviews</a></li>
+										<li><a href="contact.html"><span><img src="img/resources-4.svg" alt="campaign"></span> Help center</a></li>
+										<li><a href="compare-plans.html"><span><img src="img/resources-5.svg" alt="campaign"></span> Solutions deck</a></li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="about-us.html">Company <span><img src="img/header-arrow.svg" alt="header"></span></a>
+								<div class="header__dropdown">
+									<ul>
+										<li><a href="about-us.html"><span><img src="img/company-1.svg" alt="campaign"></span> About us</a></li>
+										<li><a href="about-us.html"><span><img src="img/company-2.svg" alt="campaign"></span> Careers</a></li>
+										<li><a href="team.html"><span><img src="img/company-3.svg" alt="campaign"></span> Team</a></li>
+										<li><a href="homepage.html"><span><img src="img/company-4.svg" alt="campaign"></span> Blog</a></li>
+										<li><a href="contact.html"><span><img src="img/company-5.svg" alt="campaign"></span> Contact</a></li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="btns">
+						<a href="contact.html" class="sign-in">Sign In</a>
+						<a href="compare-plans.html" class="regular-btn"><p>Start 14-Day Trial</p></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div class="hero__funnel">
+		<img src="img/funnel-image.webp" alt="funnel-image" decoding="async">
+		<div class="container">
+			<div class="outer__funnel">
+				<div class="desc">
+					<h1 class="h2-title secondary-font bigger">Header Text <br>
+					About <span class="colored">Funnels</span></h1>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam.</p>
+					<div class="btns">
+						<a href="compare-plans.html" class="filled-btn">Get Started <span><img src="img/filled-arrow.svg" alt="filled"></span></a>
+						<a href="contact.html" class="outline-btn"><p>Schedule Demo</p></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="shorts-portfolio">
+		<div class="container">
+			<div class="outer__shorts">
+				<span class="pre-title">portfolio</span>
+				<h2 class="h2-title secondary-font">Real Campaigns, in <span class="colored">Real Time.</span></h2>
+				<p>Watch our AI build high-performance campaigns in real time. These aren’t just concepts, they’re live assets driving actual results for top prop firms.</p>
+				<div class="slider-shorts">
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+					<div class="elem">
+						<div class="inn">
+							<a href="#" class="play-btn">
+								<img src="img/play-btn.svg" alt="play-btn">
+							</a>
+							<div class="media">
+								<img src="img/slide-1.webp" alt="slide" decoding="async">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="shorts-controls"></div>
+			</div>
+		</div>
+	</div>
+	<div class="campaign__wrapper">
+		<div class="float__back">
+			<img class="back-lyr lyr-base" src="img/image-long.webp" alt="" decoding="async" loading="lazy">
+			<img class="back-lyr lyr-top" src="img/image-long.webp" alt="" decoding="async" loading="lazy">
+			<span class="dots"><canvas class="ascii-dots"></canvas></span>
+		</div>
+		<div class="container">
+			<div class="top">
+				<h2 class="h2-title secondary-font"><span class="colored">All-in-One</span> Campaign Studio</h2>
+				<p>Why hire a team of four when one platform does it all? Scale your videos infinitely <br> with an AI built to handle every phase of campaign creation.</p>
+			</div>
+			<div class="inn">
+				<div class="inner__steps">
+				<div class="elem opened" data-shot="img/screen-image-1.webp">
+					<div class="media__full">
+						<img src="img/image-long.webp" alt="image-long" decoding="async" loading="lazy">
+					</div>
+					<p><span><img src="img/campaign-icon-1.svg" alt="campaign"></span> <span class="txt">Research and strategy</span></p>
+					<div class="desc">
+						<div class="desc-inner">
+							<p>Research and strategy</p>
+							<span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+						</div>
+					</div>
+				</div>
+				<div class="elem minified" data-shot="img/campaign-image-1.webp">
+					<div class="media__full">
+						<img src="img/image-long-2.webp" alt="image-long" decoding="async" loading="lazy">
+					</div>
+					<p><span><img src="img/campaign-icon-2.svg" alt="campaign"></span> <span class="txt">Copywriting</span></p>
+					<div class="desc">
+						<div class="desc-inner">
+							<p>Copywriting</p>
+							<span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+						</div>
+					</div>
+				</div>
+				<div class="elem minified" data-shot="img/screen-image-1.webp">
+					<div class="media__full">
+						<img src="img/image-long.webp" alt="image-long" decoding="async" loading="lazy">
+					</div>
+					<p><span><img src="img/campaign-icon-3.svg" alt="campaign"></span> <span class="txt">Filming</span></p>
+					<div class="desc">
+						<div class="desc-inner">
+							<p>Filming</p>
+							<span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+						</div>
+					</div>
+				</div>
+				<div class="elem minified" data-shot="img/campaign-image-1.webp">
+					<div class="media__full">
+						<img src="img/image-long-2.webp" alt="image-long" decoding="async" loading="lazy">
+					</div>
+					<p><span><img src="img/campaign-icon-4.svg" alt="campaign"></span> <span class="txt">Editing</span></p>
+					<div class="desc">
+						<div class="desc-inner">
+							<p>Editing</p>
+							<span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="screen__image">
+				<img class="shot-lyr lyr-base" src="img/screen-image-1.webp" alt="screen-image-1" decoding="async" loading="lazy">
+				<img class="shot-lyr lyr-top" src="img/screen-image-1.webp" alt="screen-image-1" decoding="async" loading="lazy">
+			</div>
+			</div>
+		</div>
+	</div>
+	<div class="process__wrapper">
+		<img src="img/process-back.svg" alt="process">
+		<div class="container">
+			<div class="outer__process">
+				<span class="pre-title">process</span>
+				<h2 class="h2-title secondary-font">Copy To Final <br>
+				Production <span class="colored">In Minutes</span></h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec.</p>
+				<div class="circle__process">
+					<div class="rocket">
+						<img src="img/rocket-image.svg" alt="rocket-image">
+					</div>
+					<span class="dots"><canvas class="ascii-dots"></canvas></span>
+					<div class="dot dot-1">
+						<p>Research</p>
+					</div>
+					<div class="dot dot-2">
+						<p>Analyse</p>
+					</div>
+					<div class="dot dot-3">
+						<p>Conceptualize</p>
+					</div>
+					<div class="dot dot-4">
+						<p>Write</p>
+					</div>
+					<div class="dot dot-5">
+						<p>Verify</p>
+					</div>
+
+					<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<circle cx="256" cy="256" r="254.5" stroke="white" stroke-opacity="0.1" stroke-width="3"/>
+					<path class="proc-ring" fill="none" stroke="#00FF8A" stroke-width="3" stroke-linecap="round"/>
+					</svg>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="perks__wrapper">
+		<div class="container">
+			<div class="outer__perks">
+				<span class="pre-title">perks</span>
+				<h2 class="h2-title">The ValiantAI <span class="colored">Difference</span></h2>
+				<p>The core differences that separate performance from promises</p>
+				<div class="grid__box">
+					<div class="left__side">
+						<div class="elem">
+							<p>Fully Autonomous, Full-Cycle</p>
+							<span>Most AI marketing tools are single-use and require prompting. Our platform is full-cycle (email, ads, social) and fully autonomous. No prompting. No stringing 10 different tools just to get a lousy output.</span>
+							<div class="media">
+								<img src="img/side-image-1.webp" alt="side-image-1" decoding="async" loading="lazy">
+							</div>
+						</div>
+						<div class="elem">
+							<p>Results & Realism First</p>
+							<span>Specifically designed to create performance-optimized, hyper-realistic marketing campaigns that outperform most marketing agencies and teams.</span>
+							<div class="media">
+								<img src="img/customize.webp" alt="customize" decoding="async" loading="lazy">
+							</div>
+						</div>
+					</div>
+					<div class="right__side">
+						<div class="elem long">
+							<div class="desc">
+								<p>Continuous Learning Loops</p>
+								<span>Each campaign pulls in performance data and generates learnings by comparing changes and correlations.</span>
+								<span>Our platform has an elephant memory, it never forgets. It optimizes clients and industries. Every single campaign, the system gets better.</span>
+							</div>
+							<div class="media">
+								<img src="img/long-image.webp" alt="long-image" decoding="async" loading="lazy">
+							</div>
+						</div>
+						<div class="elem double">
+							<div class="elem small">
+								<p>Winning Industry Campaign Concepts</p>
+								<span>Winning campaigns come from winning concepts. That's why we have specialized winning campaign concepts for over 800 sub-industries, not just general best practices. These are battle-tested frameworks from real markets, crafted by operators who understand the difference between what sounds good and what actually converts.</span>
+								<div class="media">
+									<img src="img/right-side-1.webp" alt="right" decoding="async" loading="lazy">
+								</div>
+							</div>
+
+							<div class="elem small">
+								<p>AI Scale with Human Control</p>
+								<span>Full control over your "AI brain" to customize system prompts, company data, and custom avatars. Plus, a dedicated marketing strategist reviews campaigns before they're shown to you.</span>
+								<div class="media">
+									<img src="img/right-side-2.webp" alt="right" decoding="async" loading="lazy">
+								</div>
+							</div>
+						</div>
+						<div class="elem long">
+							<div class="media">
+								<img src="img/graph-map.svg" alt="graph-map">
+							</div>
+							<div class="desc">
+								<p>300+ Deep Integrations</p>
+								<span>Real-time data, publishing, and management of all marketing channels through comprehensive integrations with CRMs, social channels, ad accounts, email platforms, and more.</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- <div class="avatar__wrapper">
+		<img src="img/avatar-ellipse.svg" alt="avatar-ellipse">
+		<div class="container">
+			<div class="outer__avatar">
+				<div class="top">
+					<h2 class="h2-title secondary-font">Punchy Title <span class="colored">About Realism</span></h2>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.</p>
+				</div>
+				<div class="avatar__media">
+					<div class="avatar-float float-1">
+						<div class="stick"></div>
+						<p><span><img src="img/check-big-green.svg" alt="check-big-green"></span>Hair applied</p>
+					</div>
+					<div class="avatar-float float-2">
+						<div class="stick"></div>
+						<p><span><img src="img/check-big-green.svg" alt="check-big-green"></span>Eyes applied</p>
+					</div>
+					<div class="avatar-float float-3">
+						<div class="stick"></div>
+						<p><span><img src="img/check-big-green.svg" alt="check-big-green"></span>Face applied</p>
+					</div>
+					<div class="avatar-float float-4">
+						<div class="stick"></div>
+						<p><span><img src="img/check-big-green.svg" alt="check-big-green"></span>Style applied</p>
+					</div>
+					<img src="img/avatar-image.webp" alt="avatar-image" decoding="async" loading="lazy">
+				</div>
+			</div>
+		</div>
+	</div> -->
+	<div class="how__works">
+		<div class="how-fx">
+			<span class="ray"></span>
+		</div>
+		<div class="container">
+			<div class="outer__how">
+				<span class="pre-title">how it works</span>
+				<h2 class="h2-title secondary-font">How ValiantAI Works <br>
+				in Under <span class="colored">30 Seconds</span></h2>
+				<p>The ValiantAI Process: From Setup to Scale in 8 Steps</p>
+				<div class="float__section">
+					<div class="side__how">
+						<div class="progress">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="16" cy="16" r="14" fill="none" stroke="#123022" stroke-width="3"/>
+							<circle class="progress-ring" cx="16" cy="16" r="14" fill="none" stroke="#00FF8A" stroke-width="3" stroke-linecap="round" transform="rotate(-90 16 16)"/>
+							</svg>
+						</div>
+						<div class="side__list">
+							<div class="elem active" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>First Video Concept</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Choose Your Avatar</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Connect Your Accounts</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Review Your Strategy</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Schedule Your Kickoff Call</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Review Your First Video</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Plan Your First Month</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+							<div class="elem" data-screen="img/screen-1.webp">
+								<p class='secondary-font'>Get Started</p>
+								<span>Select and tweak a concept you want to begin with</span>
+							</div>
+						</div>
+						
+					</div>
+					<div class="box-screen">
+							<div class="media-box">
+								<img class="screen-base" src="img/screen-1.webp" alt="screen-1" decoding="async" loading="lazy">
+								<img class="screen-top" src="img/screen-1.webp" alt="" decoding="async" loading="lazy">
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="hero__plans not-hero">
+		<canvas class="ascii-ero"></canvas>
+		<div class="media">
+			<img src="img/pricing-hero.webp" alt="pricing-hero" decoding="async" loading="lazy">
+		</div>
+		<div class="container">
+			<div class="outer__hero">
+				<h1 class='h2-title secondary-font bigger'>Make more. <span class="colored">Pay less.</span></h1>
+				<p>Compare and find the right plan for your team</p>
+				<div class="inner__plans">
+					<div class="elem">
+						<div class="head">
+							<div class="top">
+								<p>Team</p>
+							</div>
+							<p class="secondary-font"><span>$498</span>/month</p>
+							<div class="bottom__list">
+								<ul>
+									<li><span>$65</span>/video</li>
+									<li><span>$40</span>/email</li>
+									<li><span>$20</span>/graphic</li>
+								</ul>
+							</div>
+						</div>
+						<div class="content">
+							<div class="btn">
+								<a href="compare-plans.html" class="regular-btn">
+									<p>Get Team <span><img src="img/arrow-btn.svg" alt="btn"></span></p>
+								</a>
+							</div>
+							<ul>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p><span>20</span> integrations</p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p>Advanced Analytics, AI Brain, Reports, and Valiant Omniscient</p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p>Access to <span>all campaigns</span></p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p><span>Standard</span> usage fees</p></li>
+							</ul>
+							<div class="btn">
+								<a href="contact.html" class="outline-btn">Compare plans <span><img src="img/external.svg" alt="external"></span></a>
+							</div>
+						</div>
+					</div>
+
+
+
+					<div class="elem featured">
+						<div class="head">
+							<div class="top">
+								<p>Pro</p>
+								<span>Most Popular</span>
+							</div>
+							<p class="secondary-font"><span>$948</span>/month</p>
+							<div class="bottom__list">
+								<ul>
+									<li><span>$58</span>/video</li>
+									<li><span>$36</span>/email</li>
+									<li><span>$18</span>/graphic</li>
+								</ul>
+							</div>
+						</div>
+						<div class="content">
+							<div class="btn">
+								<a href="compare-plans.html" class="filled-btn">
+									<p>Get Pro <span><img src="img/filled-arrow.svg" alt="filled"></span></p>
+								</a>
+							</div>
+							<ul>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p><span>Unlimited</span> integrations</p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p>Advanced Analytics, AI Brain, Reports, and Valiant Omniscient</p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p>Access to <span>all campaigns</span></p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p><span>Discounted</span> usage fees</p></li>
+							</ul>
+							<div class="btn">
+								<a href="contact.html" class="outline-btn">Compare plans <span><img src="img/external.svg" alt="external"></span></a>
+							</div>
+						</div>
+					</div>
+
+					<div class="elem">
+						<div class="head">
+							<div class="top">
+								<p>Enterprise</p>
+							</div>
+							<p class="secondary-font">Custom</p>
+							<div class="bottom__list">
+								<ul>
+									<li>Custom usage fees</li>
+								</ul>
+							</div>
+						</div>
+						<div class="content">
+							<div class="btn">
+								<a href="compare-plans.html" class="regular-btn">
+									<p>Let’s chat! <span><img src="img/arrow-btn.svg" alt="btn"></span></p>
+								</a>
+							</div>
+							<ul>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p><span>Unlimited</span> integrations</p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p>Advanced Analytics, AI Brain, Reports, and Valiant Omniscient</p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p>Access to <span>all campaigns</span></p></li>
+								<li><span><img src="img/check-green-bright.svg" alt="check-green-bright"></span><p><span>Custom</span> usage fees</p></li>
+							</ul>
+							<div class="btn">
+								<a href="contact.html" class="outline-btn">Compare plans <span><img src="img/external.svg" alt="external"></span></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="trusted__wrapper">
+		<div class="container">
+			<span class="pre-title">Trusted by Leading Brands</span>
+		</div>
+		<div class="marquee__wrapper">
+			<ul>
+				<li><img src="img/partner-1.svg" alt="partner"></li>
+				<li><img src="img/partner-2.svg" alt="partner"></li>
+				<li><img src="img/partner-3.svg" alt="partner"></li>
+				<li><img src="img/partner-4.svg" alt="partner"></li>
+				<li><img src="img/partner-5.svg" alt="partner"></li>
+				<li><img src="img/partner-6.svg" alt="partner"></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="customers__feedback">
+		<div class="faq-dots"><canvas class="ascii-faq"></canvas></div>
+		<div class="container">
+			<div class="outer__customers">
+				<div class="top">
+					<span class="pre-title secondary-font">
+						reviews
+					</span>
+					<h2 class="h2-title secondary-font">What Our <span class="colored">Customers Say</span></h2>
+					<p>Join Hundreds of Satisfied Businesses using ValiantAI</p>
+				</div>
+				<div class="cards-box">
+					<div class="card light long">
+						<div class="inn">
+							<p class="secondary-font">"Has been awesome working with these guys so far! Great communication and always willing to hop on a call. Excited for the future!"</p>
+							<div class="customer-logo">
+								<img src="img/customer-1.svg" alt="customer-1">
+								<div class="spacer"></div>
+								<div class="author">
+									<p>Cameron Zoub</p>
+									<span>Co-Founder, Whop</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card dark short">
+						<div class="inn">
+							<p class="secondary-font">"Ben and his team have gone above and beyond to take such phenomenal care of our brand and elevating it to greater heights.”</p>
+							<div class="customer-logo">
+								<img src="img/customer-2.svg" alt="customer-1">
+								<div class="spacer"></div>
+								<div class="author">
+									<p>Jason Howard</p>
+									<span>Operations, Elite Trader Funding</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="faq__wrapper">
+		
+		<div class="container">
+			<div class="outer__faq">
+				<div class="top">
+					<h2 class="secondary-font h2-title">Frequently Asked <span class="colored">Questions</span></h2>
+					<p>Everything you need to know about ValiantAI</p>
+				</div>
+				<div class="content">
+					<div class="elem">
+						<div class="head-faq">
+							<span>
+								<span class="vertical"></span>
+								<span class="horizontal"></span>
+							</span>
+							<p class="secondary-font">How is ValiantAI different from other AI marketing tools?</p>
+						</div>
+						<div class="content-faq" style="display:none;">
+							<p>ValiantAI is the only fully autonomous, multi-channel platform that handles the entire marketing lifecycle. Unlike single-use tools that require constant prompting, our platform plans, creates, publishes, optimizes, and reports across email, ads, and social—all without human intervention. Plus, our continuous learning loops mean every campaign performs better than the last.</p>
+						</div>
+					</div>
+
+
+					<div class="elem">
+						<div class="head-faq">
+							<span>
+								<span class="vertical"></span>
+								<span class="horizontal"></span>
+							</span>
+							<p class="secondary-font">Do I need technical skills to use ValiantAI?</p>
+						</div>
+						<div class="content-faq" style="display:none;">
+							<p>ValiantAI is the only fully autonomous, multi-channel platform that handles the entire marketing lifecycle. Unlike single-use tools that require constant prompting, our platform plans, creates, publishes, optimizes, and reports across email, ads, and social—all without human intervention. Plus, our continuous learning loops mean every campaign performs better than the last.</p>
+						</div>
+					</div>
+
+
+					<div class="elem">
+						<div class="head-faq">
+							<span>
+								<span class="vertical"></span>
+								<span class="horizontal"></span>
+							</span>
+							<p class="secondary-font">How long does it take to see results?</p>
+						</div>
+						<div class="content-faq" style="display:none;">
+							<p>ValiantAI is the only fully autonomous, multi-channel platform that handles the entire marketing lifecycle. Unlike single-use tools that require constant prompting, our platform plans, creates, publishes, optimizes, and reports across email, ads, and social—all without human intervention. Plus, our continuous learning loops mean every campaign performs better than the last.</p>
+						</div>
+					</div>
+
+					<div class="elem">
+						<div class="head-faq">
+							<span>
+								<span class="vertical"></span>
+								<span class="horizontal"></span>
+							</span>
+							<p class="secondary-font">Can I customize the AI-generated content?</p>
+						</div>
+						<div class="content-faq" style="display:none;">
+							<p>ValiantAI is the only fully autonomous, multi-channel platform that handles the entire marketing lifecycle. Unlike single-use tools that require constant prompting, our platform plans, creates, publishes, optimizes, and reports across email, ads, and social—all without human intervention. Plus, our continuous learning loops mean every campaign performs better than the last.</p>
+						</div>
+					</div>
+
+
+					<div class="elem">
+						<div class="head-faq">
+							<span>
+								<span class="vertical"></span>
+								<span class="horizontal"></span>
+							</span>
+							<p class="secondary-font">What platforms does ValiantAI integrate with?</p>
+						</div>
+						<div class="content-faq" style="display:none;">
+							<p>ValiantAI is the only fully autonomous, multi-channel platform that handles the entire marketing lifecycle. Unlike single-use tools that require constant prompting, our platform plans, creates, publishes, optimizes, and reports across email, ads, and social—all without human intervention. Plus, our continuous learning loops mean every campaign performs better than the last.</p>
+						</div>
+					</div>
+
+					<div class="elem">
+						<div class="head-faq">
+							<span>
+								<span class="vertical"></span>
+								<span class="horizontal"></span>
+							</span>
+							<p class="secondary-font">Is there a free trial available?</p>
+						</div>
+						<div class="content-faq" style="display:none;">
+							<p>ValiantAI is the only fully autonomous, multi-channel platform that handles the entire marketing lifecycle. Unlike single-use tools that require constant prompting, our platform plans, creates, publishes, optimizes, and reports across email, ads, and social—all without human intervention. Plus, our continuous learning loops mean every campaign performs better than the last.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cta__wrapper">
+		<div class="container">
+			<div class="outer__cta">
+				<h2 class="secondary-font bigger h2-title">Ready to <span class="colored">Transform</span><br> Your Marketing?</h2>
+				<p>Join hundreds of companies that have already made the switch to autonomous <br> AI marketing. Get started today and see results within days, not months.</p>
+				<div class="btns">
+					<a href="compare-plans.html" class="filled-btn">Get Started <span><img src="img/filled-arrow.svg" alt="filled"></span></a>
+					<a href="contact.html" class="outline-btn"><p>Schedule Demo</p></a>
+				</div>
+				<div class="info__small">
+					<span><img src="img/info-check.svg" alt="info"></span>
+					<p>No fixed contract, cancel anytime</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<div class="container">
+			<div class="outer__footer">
+				<div class="top__footer">
+					<div class="left-col">
+						<a href="homepage.html">
+							<img src="img/head-logo.svg" alt="head-logo">
+						</a>
+						<p>The world’s first fully autonomous <br>
+						AI marketing platform.</p>
+					</div>
+					<div class="right-col">
+						<div class="el">
+							<p>Product</p>
+							<ul>
+								<li><a href="#">Features</a></li>
+								<li><a href="compare-plans.html">Pricing</a></li>
+								<li><a href="resources-how-it-works.html">How It Works</a></li>
+								<li><a href="#">Integrations</a></li>
+								<li><a href="#">API Documentation</a></li>
+							</ul>
+						</div>
+
+						<div class="el">
+							<p>Company</p>
+							<ul>
+								<li><a href="about-us.html">About Us</a></li>
+								<li><a href="about-us.html">Careers</a></li>
+								<li><a href="#">Blog</a></li>
+								<li><a href="#">Press Kit</a></li>
+								<li><a href="contact.html">Contact</a></li>
+							</ul>
+						</div>
+
+
+						<div class="el">
+							<p>Resources</p>
+							<ul>
+								<li><a href="contact.html">Help Center</a></li>
+								<li><a href="case-studies.html">Case Studies</a></li>
+								<li><a href="#">Webinars</a></li>
+								<li><a href="#">Marketing Guide</a></li>
+								<li><a href="#">Community</a></li>
+							</ul>
+						</div>
+
+
+						<div class="el">
+							<p>Legal</p>
+							<ul>
+								<li><a href="#">Privacy</a></li>
+								<li><a href="#">Terms of Service</a></li>
+								<li><a href="#">Cookie Policy</a></li>
+								<li><a href="#">GDPR</a></li>
+								<li><a href="#">Security</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="bottom__footer">
+					<p>© 2026 ValiantAI. All rights reserved.</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script
+  src="https://code.jquery.com/jquery-3.7.1.js"
+  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  crossorigin="anonymous"></script>
+  	<script src="js/jquery.webticker.min.js"></script>
+  	<script src="js/slick.min.js"></script>
+	<script src="js/faq-dots.js"></script>
+	<script src="js/hero-ero-dots.js"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>
