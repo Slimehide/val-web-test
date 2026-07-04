@@ -1,10 +1,3 @@
-/*
- * Resources hero rays.
- * White translucent lines fan out to the floating pills. A bright green ball
- * runs down each line trailing a fading green comet; when it slides off the
- * bottom the loop restarts. Everything is drawn on one canvas from a single
- * set of polylines, so the ball can never drift off its line.
- */
 (function () {
 	var box = document.querySelector('.hero__resources .bottom__float');
 	if (!box) return;
@@ -15,10 +8,6 @@
 
 	var DESIGN_W = 720, DESIGN_H = 230;
 
-	// Desktop: bent circuit traces. The start point is read from the pill at
-	// runtime (edge it faces), then the trace routes to a vertical lane and drops
-	// off-screen. Reading the pill means the line always touches it — no gap —
-	// whatever the pill's exact position. laneX/bendY are in 720x230 design space.
 	var DESKTOP = [
 		{ sel: '.work-flow-1', edge: 'right',  type: 'ortho', laneX: 276 },
 		{ sel: '.work-flow-2', edge: 'right',  type: 'diag',  laneX: 318, bendY: 140 },
@@ -27,12 +16,6 @@
 		{ sel: '.work-flow-5', edge: 'left',   type: 'ortho', laneX: 444 }
 	];
 
-	// Mobile: a clean central spine. The top pill drops straight down it; the
-	// side pills branch horizontally into it. Everything converges to a single
-	// green ball at the centre-bottom. Geometry is read from the pills so it
-	// always lines up.
-	// lane = horizontal offset (in lane-steps) from centre, so the verticals run
-	// as a tight bundle of parallel lines instead of merging into one trunk.
 	var MOBILE = [
 		{ sel: '.work-flow-1', side: 'left', lane: -2 },
 		{ sel: '.work-flow-2', side: 'left', lane: -1 },
@@ -42,8 +25,8 @@
 	];
 
 	var mq = window.matchMedia('(max-width: 767px)');
-	var DUR = 3.2;     // seconds per loop
-	var TRAIL = 0.34;  // tail length as a fraction of the path
+	var DUR = 3.2;
+	var TRAIL = 0.34;
 
 	var W = 0, H = 0, dpr = 1, paths = [], raf = 0;
 
@@ -84,8 +67,8 @@
 		paths = [];
 		if (mq.matches) {
 			var cx = W / 2;
-			var exitY = H * 1.1;                           // off-screen bottom
-			var step = Math.max(5, W * 0.018);             // lane spacing
+			var exitY = H * 1.1;
+			var step = Math.max(5, W * 0.018);
 			MOBILE.forEach(function (m) {
 				var el = box.querySelector(m.sel);
 				if (!el) return;
@@ -106,7 +89,7 @@
 			});
 		} else {
 			var kx = W / DESIGN_W, ky = H / DESIGN_H;
-			var dExitY = 300 * ky;                         // off-screen bottom
+			var dExitY = 300 * ky;
 			DESKTOP.forEach(function (m) {
 				var el = box.querySelector(m.sel);
 				if (!el) return;
@@ -117,14 +100,14 @@
 				var conn;
 				if (m.edge === 'right') conn = { x: right, y: midY };
 				else if (m.edge === 'left') conn = { x: left, y: midY };
-				else conn = { x: (left + right) / 2, y: bottom };   // bottom-centre
+				else conn = { x: (left + right) / 2, y: bottom };
 				var laneX = m.laneX * kx;
 				var pts;
 				if (m.type === 'down') {
 					pts = [conn, { x: conn.x, y: dExitY }];
 				} else if (m.type === 'ortho') {
 					pts = [conn, { x: laneX, y: conn.y }, { x: laneX, y: dExitY }];
-				} else {                                            // diag then drop
+				} else {
 					pts = [conn, { x: laneX, y: m.bendY * ky }, { x: laneX, y: dExitY }];
 				}
 				paths.push(buildPath(pts));
@@ -132,41 +115,24 @@
 		}
 	}
 
-	function comet(p, head, tail, lw) {
-		var STEP = 4, start = Math.max(0, head - tail);
-		var prev = pointAt(p, head);
-		for (var d = head - STEP; d > start; d -= STEP) {
-			var cur = pointAt(p, d);
-			var a = (d - start) / tail;               // 0 at tail end -> 1 at head
-			ctx.beginPath();
-			ctx.moveTo(prev.x, prev.y);
-			ctx.lineTo(cur.x, cur.y);
-			ctx.strokeStyle = 'rgba(0,255,138,' + (a * a * 0.9).toFixed(3) + ')';
-			ctx.lineWidth = lw * (0.55 + a * 0.75);
-			ctx.stroke();
-			prev = cur;
+	function runner(p, a, b, lw) {
+		if (b <= 0 || a >= p.len || b <= a) return;
+		a = Math.max(0, a); b = Math.min(p.len, b);
+		var from = pointAt(p, a);
+		ctx.beginPath();
+		ctx.moveTo(from.x, from.y);
+		for (var i = 0; i < p.seg.length; i++) {
+			var s = p.seg[i];
+			var vEnd = s.acc + s.d;
+			if (vEnd <= a) continue;
+			if (vEnd >= b) break;
+			ctx.lineTo(s.b.x, s.b.y);
 		}
-		// connect down to the exact tail end so there is no gap
-		var endP = pointAt(p, start);
-		ctx.beginPath();
-		ctx.moveTo(prev.x, prev.y);
-		ctx.lineTo(endP.x, endP.y);
-		ctx.strokeStyle = 'rgba(0,255,138,0.02)';
-		ctx.lineWidth = lw * 0.55;
+		var to = pointAt(p, b);
+		ctx.lineTo(to.x, to.y);
+		ctx.strokeStyle = '#00FF8A';
+		ctx.lineWidth = lw * 1.3;
 		ctx.stroke();
-
-		var b = pointAt(p, head);
-		var g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, lw * 3.4);
-		g.addColorStop(0, 'rgba(0,255,138,0.9)');
-		g.addColorStop(1, 'rgba(0,255,138,0)');
-		ctx.fillStyle = g;
-		ctx.beginPath();
-		ctx.arc(b.x, b.y, lw * 3.4, 0, Math.PI * 2);
-		ctx.fill();
-		ctx.fillStyle = '#b7ffdc';
-		ctx.beginPath();
-		ctx.arc(b.x, b.y, lw * 1.05, 0, Math.PI * 2);
-		ctx.fill();
 	}
 
 	function draw(now) {
@@ -189,11 +155,12 @@
 			ctx.stroke();
 		}
 
-		// All balls leave in sync: one shared phase, no per-line offset.
 		var t = (now / 1000 / DUR) % 1;
 		for (var k = 0; k < paths.length; k++) {
 			var pa = paths[k];
-			comet(pa, t * pa.len, TRAIL * pa.len, lw);
+			var seg = pa.len * TRAIL;
+			var head = t * (pa.len + seg);
+			runner(pa, head - seg, head, lw);
 		}
 	}
 
@@ -217,7 +184,6 @@
 		start();
 	}
 
-	// Lightweight introspection hook used by the test harness; harmless in prod.
 	window.__resourcesRays = {
 		state: function () { return { W: W, H: H, mobile: mq.matches, paths: paths }; },
 		ballsAt: function (now) {

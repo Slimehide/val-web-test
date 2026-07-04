@@ -1,16 +1,10 @@
-/*
- * Resources page — switcher with per-tab content panels + fade reveal.
- * Each tab owns its own copy of the content blocks. Switching hides the other
- * panels entirely and the chosen one's blocks appear with a fade (in view
- * straight away, the rest as they scroll into view).
- */
 (function () {
 	var wrapper = document.querySelector('.resources__list--wrapper');
 	if (!wrapper) return;
 	var list = wrapper.querySelector('.resources__list');
 	var tabs = list ? Array.prototype.slice.call(list.querySelectorAll('a')) : [];
-	var origBlocks = Array.prototype.slice.call(wrapper.querySelectorAll('.resource__el'));
-	if (!origBlocks.length) return;
+	var blocks = Array.prototype.slice.call(wrapper.querySelectorAll('.resource__el'));
+	if (!blocks.length) return;
 
 	var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
 		entries.forEach(function (en) {
@@ -18,54 +12,62 @@
 		});
 	}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }) : null;
 
-	// Move the original blocks into the first panel, then clone one panel per tab.
-	var panelsWrap = document.createElement('div');
-	panelsWrap.className = 'resource__panels';
-	var firstPanel = document.createElement('div');
-	firstPanel.className = 'resource__panel is-active';
-	origBlocks.forEach(function (b) { firstPanel.appendChild(b); });
-	panelsWrap.appendChild(firstPanel);
-	wrapper.appendChild(panelsWrap);
+	blocks.forEach(function (b, i) {
+		if (!b.id) b.id = 'resource-sec-' + (i + 1);
+		b.classList.add('js-reveal');
+		if (io) io.observe(b);
+		else b.classList.add('is-visible');
+	});
 
-	var panels = [firstPanel];
-	var count = Math.max(tabs.length, 1);
-	for (var i = 1; i < count; i++) {
-		var clone = firstPanel.cloneNode(true);
-		clone.classList.remove('is-active');
-		panelsWrap.appendChild(clone);
-		panels.push(clone);
+	function blockFor(i) { return blocks[Math.min(i, blocks.length - 1)]; }
+	var spyLock = 0;
+
+	var bar = wrapper.querySelector(':scope > .container');
+	var barH = 120;
+	function measureBar() {
+		if (bar) barH = bar.offsetHeight || 120;
+		blocks.forEach(function (b) { b.style.scrollMarginTop = (barH + 16) + 'px'; });
 	}
+	measureBar();
+	window.addEventListener('resize', measureBar);
 
-	function revealPanel(panel) {
-		var els = panel.querySelectorAll('.resource__el');
-		Array.prototype.forEach.call(els, function (el) {
-			el.classList.add('js-reveal');
-			el.classList.remove('is-visible');
-			if (io) io.observe(el);
-			else el.classList.add('is-visible');
-		});
-	}
-
-	function activate(idx) {
-		if (!panels[idx]) return;
-		panels.forEach(function (p, i) {
-			if (i === idx) return;
-			p.classList.remove('is-active');
-			if (io) Array.prototype.forEach.call(p.querySelectorAll('.resource__el'), function (el) { io.unobserve(el); });
-		});
-		panels[idx].classList.add('is-active');
-		revealPanel(panels[idx]);
+	var lastIdx = -1;
+	function setCurrent(idx) {
+		if (idx === lastIdx) return;
+		lastIdx = idx;
+		tabs.forEach(function (t, k) { t.classList.toggle('current', k === idx); });
+		var t = tabs[idx];
+		if (t && list && list.scrollWidth > list.clientWidth + 4) {
+			var left = t.getBoundingClientRect().left - list.getBoundingClientRect().left + list.scrollLeft;
+			list.scrollTo({ left: left + t.offsetWidth / 2 - list.clientWidth / 2, behavior: 'smooth' });
+		}
 	}
 
 	tabs.forEach(function (tab, i) {
+		var target = blockFor(i);
+		tab.setAttribute('href', '#' + target.id);
 		tab.addEventListener('click', function (e) {
 			e.preventDefault();
-			tabs.forEach(function (t) { t.classList.remove('current'); });
-			tab.classList.add('current');
-			activate(i);
+			setCurrent(i);
+			spyLock = Date.now() + 1100;
+			target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		});
 	});
 
-	// initial reveal of the active panel
-	revealPanel(firstPanel);
+	function spy() {
+		if (Date.now() < spyLock) return;
+		var line = barH + 60;
+		var idx = 0;
+		for (var i = 0; i < blocks.length; i++) {
+			if (blocks[i].getBoundingClientRect().top <= line) idx = i;
+		}
+		setCurrent(Math.min(idx, tabs.length - 1));
+	}
+	var ticking = false;
+	window.addEventListener('scroll', function () {
+		if (ticking) return;
+		ticking = true;
+		requestAnimationFrame(function () { ticking = false; spy(); });
+	}, { passive: true });
+	spy();
 })();

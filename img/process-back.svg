@@ -5,8 +5,8 @@
 <path d="M0 0H1440V1016H0V0Z" fill="url(#paint0_linear_40_5734)"/>
 <path d="M0 0H1440V1016H0V0Z" fill="url(#paint1_linear_40_5734)" fill-opacity="0.5"/>
 <path d="M0 0H1440V1016H0V0Z" fill="url(#paint2_linear_40_5734)"/>
-<path d="M1440 1016V1015H0V1016V1017H1440V1016Z" fill="white" fill-opacity="0.3" style="mix-blend-mode:overlay" mask="url(#path-1-inside-1_40_5734)"/>
-<path d="M1440 1016V1015H0V1016V1017H1440V1016Z" fill="white" fill-opacity="0.1" mask="url(#path-1-inside-1_40_5734)"/>
+
+
 <defs>
 <linearGradient id="paint0_linear_40_5734" x1="720" y1="0" x2="720" y2="1016" gradientUnits="userSpaceOnUse">
 <stop stop-color="#091811" stop-opacity="0"/>
