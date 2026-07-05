@@ -52,7 +52,7 @@ $(document).ready(function(){
 				var media = this.querySelector('.media');
 				if (!media) return;
 				var v = document.createElement('video');
-				v.src = VIDS[i % VIDS.length];
+				v.dataset.src = VIDS[i % VIDS.length];
 				v.muted = true;
 				v.playsInline = true;
 				v.setAttribute('playsinline', '');
@@ -77,11 +77,21 @@ $(document).ready(function(){
 				$shorts.find('.inn').removeClass('user-mode is-playing');
 				$shorts.find('.vc-sound').each(function(){ this.innerHTML = SND_ON; });
 			}
+			function ensureSrc(v){
+				if (v && !v.getAttribute('src') && v.dataset.src) v.setAttribute('src', v.dataset.src);
+			}
 			function stopAll(){
 				clearTimeout(advTimer);
 				$shorts.find('video.shorts-video').each(function(){
 					this.ontimeupdate = null; this.onended = null;
-					try { this.pause(); this.currentTime = 0; this.muted = true; } catch (e) {}
+					try {
+						this.pause();
+						this.muted = true;
+						/* drop the media buffers of every parked clip — with 20+
+						   <video> in the strip Chrome otherwise keeps a decoder
+						   per element and the page slowly grinds down */
+						if (this.getAttribute('src')){ this.removeAttribute('src'); this.load(); }
+					} catch (e) {}
 				});
 				$shorts.find('.vp-progress>i').css('width', '0');
 			}
@@ -91,6 +101,20 @@ $(document).ready(function(){
 				};
 			}
 			function next(){ clearTimeout(advTimer); $shorts.slick('slickNext'); }
+			var pendingUser = -1;
+			function userPlay(inn, v){
+				inn.classList.add('user-mode');
+				ensureSrc(v);
+				try { v.currentTime = 0; } catch (err) {}
+				v.muted = false;
+				var snd = inn.querySelector('.vc-sound');
+				if (snd) snd.innerHTML = SND_ON;
+				bindProgress(v, inn.querySelector('.vp-progress>i'));
+				v.onended = null;
+				var p = v.play();
+				if (p && p.catch) p.catch(function(){});
+				inn.classList.add('is-playing');
+			}
 			function playCurrent(){
 				stopAll();
 				resetControls();
@@ -98,8 +122,16 @@ $(document).ready(function(){
 				if (!cur) return;
 				var v = cur.querySelector('video.shorts-video');
 				var bar = cur.querySelector('.vp-progress>i');
+				if (v && pendingUser === $shorts.slick('slickCurrentSlide')){
+					pendingUser = -1;
+					clearTimeout(advTimer);
+					userPlay(cur, v);
+					return;
+				}
+				pendingUser = -1;
 				if (auto) advTimer = setTimeout(next, 12000);
 				if (!v){ if (auto){ clearTimeout(advTimer); advTimer = setTimeout(next, 5000); } return; }
+				ensureSrc(v);
 				v.muted = true;
 				var p = v.play();
 				if (p && p.catch) p.catch(function(){});
@@ -115,23 +147,31 @@ $(document).ready(function(){
 				if (!v) return;
 				auto = false;
 				clearTimeout(advTimer);
+				// clicking play on a side slide swipes it to the centre first
+				// (and parks every other clip)
+				var $slide = $(this).closest('.slick-slide');
+				var rawIdx = parseInt($slide.attr('data-slick-index'), 10);
+				if (!isNaN(rawIdx)){
+					var count = $shorts.slick('getSlick').slideCount;
+					var realIdx = ((rawIdx % count) + count) % count;
+					if (realIdx !== $shorts.slick('slickCurrentSlide')){
+						stopAll();
+						resetControls();
+						pendingUser = realIdx;
+						$shorts.slick('slickGoTo', realIdx);
+						return;
+					}
+				}
 				if (!inn.classList.contains('user-mode')){
-					inn.classList.add('user-mode');
-					try { v.currentTime = 0; } catch (err) {}
-					v.muted = false;
-					var snd = inn.querySelector('.vc-sound');
-					if (snd) snd.innerHTML = SND_ON;
-					bindProgress(v, inn.querySelector('.vp-progress>i'));
-					v.onended = null;
-					var p = v.play();
-					if (p && p.catch) p.catch(function(){});
-					inn.classList.add('is-playing');
+					clearTimeout(advTimer);
+					userPlay(inn, v);
 					return;
 				}
 				if (inn.classList.contains('is-playing')){
 					v.pause();
 					inn.classList.remove('is-playing');
 				} else {
+					ensureSrc(v);
 					var p2 = v.play();
 					if (p2 && p2.catch) p2.catch(function(){});
 					inn.classList.add('is-playing');
@@ -231,10 +271,46 @@ $(document).ready(function(){
 			if (!ul.length || ul.data('marquee-ready')) return;
 			var items = ul.children('li');
 			if (!items.length) return;
-			ul.append(items.clone(true));
-			var dur = Math.max(20, Math.round(items.length * 3.2));
-			ul.css('animation-duration', dur + 's');
 			ul.data('marquee-ready', true);
+			var ulEl = ul[0];
+			ulEl.style.animation = 'none';
+			var reverse = elem.classList.contains('reverse');
+			var half = 0, x = 0, speed = 32, factor = 1, target = 1, raf = null, lastTs = 0, inV = true;
+			function fill(){
+				var kids = Array.prototype.slice.call(ulEl.children);
+				var base = 0;
+				for (var k = 0; k < items.length; k++) base += items[k].getBoundingClientRect().width + 15;
+				if (!base) return;
+				var need = Math.max(2, Math.ceil((window.innerWidth + 200) / base) + 1);
+				var copies = Math.round(kids.length / items.length);
+				for (var c = copies; c < need * 2; c++){
+					for (var m = 0; m < items.length; m++) ulEl.appendChild(items[m].cloneNode(true));
+				}
+				half = 0;
+				var all = ulEl.children;
+				for (var q = 0; q < all.length / 2; q++) half += all[q].getBoundingClientRect().width + 15;
+			}
+			function tick(ts){
+				raf = requestAnimationFrame(tick);
+				if (!inV || document.hidden || !half) { lastTs = ts; return; }
+				var dt = lastTs ? Math.min((ts - lastTs) / 1000, 0.05) : 0.016;
+				lastTs = ts;
+				factor += (target - factor) * Math.min(1, dt * 5);
+				x += speed * factor * dt;
+				if (x >= half) x -= half;
+				var tx = reverse ? (x - half) : -x;
+				ulEl.style.transform = 'translate3d(' + tx.toFixed(2) + 'px,0,0)';
+			}
+			fill();
+			var rT;
+			window.addEventListener('resize', function(){ clearTimeout(rT); rT = setTimeout(fill, 200); });
+			window.addEventListener('load', fill);
+			elem.addEventListener('mouseenter', function(){ target = 0.18; });
+			elem.addEventListener('mouseleave', function(){ target = 1; });
+			if ('IntersectionObserver' in window){
+				new IntersectionObserver(function(es){ inV = es[0].isIntersecting; }, { rootMargin: '80px' }).observe(elem);
+			}
+			raf = requestAnimationFrame(tick);
 		});
 	}
 
@@ -360,13 +436,24 @@ $(document).ready(function(){
 		}
 		wrap.classList.add('av-pin');
 		wrap.style.minHeight = (100 + floats.length * 45) + 'vh';
+		var cont = wrap.querySelector(':scope > .container');
+		var ell = wrap.querySelector(':scope > img');
+		if (cont && ell){
+			ell.classList.add('av-ellipse');
+			cont.insertBefore(ell, cont.firstChild);
+		}
 		function update(){
 			var r = wrap.getBoundingClientRect();
 			var vh = window.innerHeight || 800;
 			var scrollable = r.height - vh;
 			var p = scrollable > 0 ? Math.min(1, Math.max(0, -r.top / scrollable)) : 1;
+			// scrub, don't trigger: each float gets a 0..1 slice of the pin
+			// scroll, so the reveal advances/rewinds with the scroll itself
+			var seg = 1 / (floats.length + 0.7);
 			for (var i = 0; i < floats.length; i++){
-				floats[i].classList.toggle('revealed', p >= (i + 0.55) / (floats.length + 0.7));
+				var q = (p - (i + 0.15) * seg) / (seg * 0.85);
+				if (q < 0) q = 0; else if (q > 1) q = 1;
+				floats[i].style.setProperty('--rv', q.toFixed(3));
 			}
 		}
 		var ticking = false;
@@ -635,7 +722,7 @@ $(document).ready(function(){
 		var img = new Image();
 		var ready = false;
 		img.onload = function(){ ready = true; resize(); };
-		img.src = opts.src;
+		if (opts.src) img.src = opts.src;
 
 		function num(s, k){ var mm = new RegExp(k + '="([\\d.\\-]+)"').exec(s); return mm ? parseFloat(mm[1]) : null; }
 		function parseSvgDots(txt){
@@ -782,6 +869,29 @@ $(document).ready(function(){
 			});
 		}
 
+		function buildFill(){
+			base = new Float32Array(COLS * ROWS);
+			phase = new Float32Array(COLS * ROWS);
+			for (var k = 0; k < COLS * ROWS; k++){
+				base[k] = 0.3 + 0.7 * Math.random();
+				phase[k] = Math.random() * Math.PI * 2;
+			}
+		}
+		function buildDisc(){
+			base = new Float32Array(COLS * ROWS);
+			phase = new Float32Array(COLS * ROWS);
+			var dcx = W / 2, dcy = H / 2, R = Math.min(W, H) / 2 - CELL * 0.35;
+			for (var j = 0; j < ROWS; j++){
+				for (var i = 0; i < COLS; i++){
+					var x = i * CELL + CELL / 2;
+					var y = j * CELL + CELL / 2;
+					if (Math.hypot(x - dcx, y - dcy) > R) continue;
+					var k = j * COLS + i;
+					base[k] = 0.45 + 0.55 * Math.random();
+					phase[k] = Math.random() * Math.PI * 2;
+				}
+			}
+		}
 		function resize(){
 			if ((base || pdots) && W === host.offsetWidth && H === host.offsetHeight) return;
 			W = host.offsetWidth;
@@ -793,6 +903,8 @@ $(document).ready(function(){
 			ctx.font = CELL + 'px ui-monospace, Menlo, Consolas, monospace';
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
+			if (opts.fill){ buildFill(); return; }
+			if (opts.disc){ buildDisc(); return; }
 			if (parsed){ buildParsed(); return; }
 			if (!trySVG()) buildProcedural();
 		}
@@ -891,9 +1003,13 @@ $(document).ready(function(){
 		}
 
 		resize();
-		$(window).on('resize', resize);
+		/* rebuilding the field re-rasterises the SVG + getImageData — far too
+		   heavy to run on every resize event, so coalesce the bursts */
+		var rzT = null;
+		function queueResize(){ clearTimeout(rzT); rzT = setTimeout(resize, 150); }
+		$(window).on('resize', queueResize);
 		$(window).on('load', resize);
-		if ('ResizeObserver' in window){ new ResizeObserver(function(){ resize(); }).observe(host); }
+		if ('ResizeObserver' in window){ new ResizeObserver(queueResize).observe(host); }
 
 		function start(){ if (rafId == null && inView && !document.hidden) rafId = requestAnimationFrame(frame); }
 		if ('IntersectionObserver' in window){
@@ -938,7 +1054,7 @@ $(document).ready(function(){
 		var SRC = 9;
 		var N = 12;
 		var R = 268;
-		var DOCK = 180;
+		var DOCK = 180;   // recalibrated to the pill slot by measureSlot()
 		var nodes = [];
 		for (var i = 0; i < N; i++){
 			var nd = document.createElement('div');
@@ -953,12 +1069,46 @@ $(document).ready(function(){
 		var rot = 0, inView = false, timer = null;
 
 		function norm(a){ return ((a % 360) + 360) % 360; }
+		// the pill sits in normal flow, so measure where its right slot
+		// actually is and park the docked ball exactly in it
+		var slot = null;
+		function measureSlot(){
+			var bb = box.getBoundingClientRect();
+			if (!bb.width || !nodes.length){ slot = null; return; }
+			// ancestors may flip/scale the orbit — derive the local->viewport
+			// matrix empirically with probe transforms, then invert it
+			var probe = nodes[0];
+			var keepTr = probe.style.transform;
+			probe.style.transition = 'none';
+			probe.style.transform = 'translate(0px,0px)';
+			var r0 = probe.getBoundingClientRect();
+			probe.style.transform = 'translate(100px,0px)';
+			var rx = probe.getBoundingClientRect();
+			probe.style.transform = 'translate(0px,100px)';
+			var ry = probe.getBoundingClientRect();
+			probe.style.transform = keepTr;
+			void probe.offsetWidth;
+			probe.style.transition = '';
+			var m00 = (rx.left - r0.left) / 100, m10 = (rx.top - r0.top) / 100;
+			var m01 = (ry.left - r0.left) / 100, m11 = (ry.top - r0.top) / 100;
+			var det = m00 * m11 - m01 * m10;
+			if (!det){ slot = null; return; }
+			var sx = (bb.right - bb.height / 2) - (r0.left + r0.width / 2);
+			var sy = (bb.top + bb.height / 2) - (r0.top + r0.height / 2);
+			slot = { x: (m11 * sx - m01 * sy) / det, y: (m00 * sy - m10 * sx) / det };
+			DOCK = Math.round(norm(Math.atan2(slot.y, slot.x) * 180 / Math.PI) / STEP) * STEP;
+		}
 		function render(){
 			for (var i = 0; i < N; i++){
 				var a = i * STEP + rot;
-				var docked = Math.abs(((norm(a - DOCK) + 180) % 360) - 180) < STEP / 2;
-				var sc = docked ? 1.5 : 1;
-				nodes[i].style.transform = 'rotate(' + a + 'deg) translate(' + R + 'px) rotate(' + (-a) + 'deg) scale(' + sc + ')';
+				var d = Math.abs(((norm(a - DOCK) + 180) % 360) - 180);
+				var docked = d < STEP / 2;
+				if (docked && slot){
+					nodes[i].style.transform = 'translate(' + slot.x.toFixed(1) + 'px,' + slot.y.toFixed(1) + 'px) scale(1.5)';
+				} else {
+					var sc = 1 + 0.18 * Math.pow(1 - d / 180, 3);
+					nodes[i].style.transform = 'rotate(' + a + 'deg) translate(' + R + 'px) rotate(' + (-a) + 'deg) scale(' + sc.toFixed(3) + ')';
+				}
 				nodes[i].classList.toggle('docked', docked);
 			}
 		}
@@ -967,14 +1117,13 @@ $(document).ready(function(){
 			var pp = box.offsetParent || host.offsetParent;
 			var hb = host.getBoundingClientRect();
 			var pb = pp.getBoundingClientRect();
-			var scale = hb.width / 700;
-			var effR = R * scale;
-			var cx = hb.left - pb.left + hb.width / 2;
-			var cy = hb.top - pb.top + hb.height / 2;
-			var dx = cx + effR * Math.cos(DOCK * Math.PI / 180);
-			var dy = cy + effR * Math.sin(DOCK * Math.PI / 180);
+			var ob = orbit.getBoundingClientRect();
+			var ocx = ob.left - pb.left + ob.width / 2;
+			var ocy = ob.top - pb.top + ob.height / 2;
+			var dx = ocx + R * Math.cos(DOCK * Math.PI / 180);
+			var dy = ocy + R * Math.sin(DOCK * Math.PI / 180);
 			var bw = box.offsetWidth, bh = box.offsetHeight;
-			var left = dx - bw + 70 * scale;
+			var left = dx - bw + bh / 2;
 			var maxLeft = pb.width - bw - 6;
 			if (left < 6) left = 6; else if (left > maxLeft) left = maxLeft;
 			box.style.left = Math.round(left) + 'px';
@@ -986,10 +1135,12 @@ $(document).ready(function(){
 			render();
 			if (valiant){ valiant.classList.remove('pulse'); void valiant.offsetWidth; valiant.classList.add('pulse'); }
 		}
+		measureSlot();
 		render();
 		placeBox();
-		window.addEventListener('resize', placeBox);
-		window.addEventListener('load', placeBox);
+		function relayout(){ placeBox(); measureSlot(); render(); }
+		window.addEventListener('resize', relayout);
+		window.addEventListener('load', relayout);
 		if ('IntersectionObserver' in window){
 			new IntersectionObserver(function(es){ inView = es[0].isIntersecting; }, { rootMargin: '0px' }).observe(wrap);
 		} else { inView = true; }
@@ -1036,6 +1187,34 @@ $(document).ready(function(){
 			src: 'img/team-dots-back.svg', svgDots: true,
 			color: '255,255,255', floor: 0, gain: 1,
 			pointerHost: document.querySelector('.our__team--slider')
+		});
+	}
+	if ($('.workflows__wrapper .dots-corner canvas').length){
+		initAsciiBg($('.workflows__wrapper .dots-corner canvas')[0], {
+			src: 'img/workflows-dots.svg', svgDots: true,
+			color: '255,255,255', floor: 0, gain: 1,
+			pointerHost: document.querySelector('.workflows__wrapper')
+		});
+	}
+	$('.faq__wrapper .faq-field canvas').each(function(){
+		initAsciiBg(this, {
+			fill: true, cell: 24, dotScale: 0.6,
+			color: '255,255,255', floor: 0.12, gain: 0.3, twinkle: 0.4,
+			pointerHost: this.closest('.faq__wrapper')
+		});
+	});
+	$('.shorts-portfolio .dots-float canvas').each(function(){
+		initAsciiBg(this, {
+			src: 'img/dots-reviews.svg', svgDots: true,
+			color: '255,255,255', floor: 0, gain: 1,
+			pointerHost: this.closest('.shorts-portfolio')
+		});
+	});
+	if ($('.outer__integrations>.dots canvas').length){
+		initAsciiBg($('.outer__integrations>.dots canvas')[0], {
+			src: 'img/dots-integrations.svg', svgDots: true,
+			color: '255,255,255', floor: 0, gain: 1,
+			pointerHost: document.querySelector('.integrations__wrapper')
 		});
 	}
 	if ($('.markets__dead .dots-fx .ascii-dots').length){
@@ -1115,6 +1294,16 @@ $(document).ready(function(){
 		var imgTop = section.querySelector('.box-screen .media-box>.screen-top');
 		var n = elems.length;
 		if (!n || !outer || !floatEl) return;
+		// the whole block — title, copy and the steps — pins as one stack, so
+		// the section sticks from its title instead of just the steps
+		var stack = outer.querySelector(':scope > .pin-stack');
+		if (!stack){
+			stack = document.createElement('div');
+			stack.className = 'pin-stack';
+			while (outer.firstChild) stack.appendChild(outer.firstChild);
+			outer.appendChild(stack);
+		}
+		floatEl = stack;
 
 		var C = 2 * Math.PI * 14;
 		if (ring) ring.style.strokeDasharray = C.toFixed(2);
@@ -1287,6 +1476,8 @@ $(document).ready(function(){
 		var STEP_DUR = 560;
 		function nowMs(){ return (window.performance && performance.now) ? performance.now() : Date.now(); }
 		var backLyrs = backBox ? Array.prototype.slice.call(backBox.querySelectorAll('.back-lyr')) : [];
+		var dotsLyr = backBox ? backBox.querySelector('.dots') : null;
+		var lastLift = '';
 		function frame(){
 			if (!stIn || document.hidden || mq.matches){ stRaf = null; return; }
 			stRaf = requestAnimationFrame(frame);
@@ -1295,8 +1486,13 @@ $(document).ready(function(){
 			var vhh = window.innerHeight || 800;
 			var stR = stack.getBoundingClientRect();
 			var rel = clamp((40 - stR.top) / (vhh * 0.6));
-			for (var bl = 0; bl < backLyrs.length; bl++){
-				backLyrs[bl].style.translate = '0px ' + (-(rel * vhh * 0.65)).toFixed(1) + 'px';
+			var lift = '0px ' + (-(rel * vhh * 0.65)).toFixed(1) + 'px';
+			if (lift !== lastLift){
+				lastLift = lift;
+				for (var bl = 0; bl < backLyrs.length; bl++){
+					backLyrs[bl].style.translate = lift;
+				}
+				if (dotsLyr) dotsLyr.style.translate = lift;
 			}
 			var target = Math.min(n - 1, Math.max(0, Math.floor(p * n + 1e-6)));
 			if (displayStep === -1){ displayStep = target; setActive(displayStep); return; }
@@ -1370,7 +1566,7 @@ $(document).ready(function(){
 
 	if ($('.circle__process .ascii-dots').length){
 		initAsciiBg($('.circle__process .ascii-dots')[0], {
-			src: 'img/rocket-dots.svg', place: 'fit-center', cell: 14,
+			src: 'img/rocket-dots.svg', disc: true, cell: 14,
 			dotScale: 0.8, floor: 0.42, gain: 0.75, twinkle: 0.55,
 			pointerHost: document.querySelector('.process__wrapper')
 		});
@@ -1669,22 +1865,58 @@ $(document).ready(function(){
 				$('.cases-slider').css('width' , $('.cases-slider').outerWidth() + $('.cases-slider').offset().left);
 			});
 		}
-		$('.more__case--studies .cases-slider').slick({
-			slidesToShow:1,
-			variableWidth:true,
-			dots:true,
-			arrows:true,
-			appendDots:$('.cases-controls .dots'),
-			 responsive: [
-			    {
-			      breakpoint: 991,
-			      settings: {
-			        variableWidth:false,
-			        adaptiveHeight:true
-			      }
-			    }
-			  ]
-		});
+		(function(){
+			var $cs = $('.more__case--studies .cases-slider');
+			if (!$cs.length || $cs.hasClass('slick-initialized')) return;
+			$cs.find('.slide').removeClass('long').addClass('short');
+			$cs.slick({
+				slidesToShow:1,
+				variableWidth:true,
+				dots:true,
+				arrows:true,
+				appendDots:$('.cases-controls .dots'),
+				 responsive: [
+				    {
+				      breakpoint: 991,
+				      settings: {
+				        variableWidth:false,
+				        adaptiveHeight:true
+				      }
+				    }
+				  ]
+			});
+			var lock = 0, posRaf = null, posUntil = 0;
+			function pumpPositions(){
+				posUntil = Date.now() + 750;
+				if (posRaf) return;
+				(function step(){
+					$cs.slick('setPosition');
+					if (Date.now() < posUntil) posRaf = requestAnimationFrame(step);
+					else posRaf = null;
+				})();
+			}
+			function openSlide(idx, go){
+				var slick = $cs.slick('getSlick');
+				var count = slick.slideCount;
+				var real = ((idx % count) + count) % count;
+				$cs.find('.slick-slide').each(function(){
+					var di = parseInt(this.getAttribute('data-slick-index'), 10);
+					var on = ((di % count) + count) % count === real;
+					this.classList.toggle('cs-open', on);
+				});
+				if (go) $cs.slick('slickGoTo', real);
+				pumpPositions();
+			}
+			$cs.on('mouseenter', '.slick-slide', function(){
+				if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+				if (window.innerWidth <= 991) return;
+				if (this.classList.contains('cs-open')) return;
+				if (Date.now() < lock) return;
+				lock = Date.now() + 700;
+				openSlide(parseInt(this.getAttribute('data-slick-index'), 10), true);
+			});
+			$cs.on('afterChange', function(e, slick, cur){ openSlide(cur, false); });
+		})();
 
 		$(window).on('resize' ,function(){
 			$('.more__case--studies .cases-slider').css("width" ,"auto")
@@ -2380,9 +2612,9 @@ $(document).ready(function(){
 			if (played) return; played = true;
 			if (reduce){ sec.className += ' m-skull m-bones m-title'; return; }
 			sec.classList.add('m-skull');
-			setTimeout(function(){ sec.classList.add('m-bones'); }, 350);
-			setTimeout(function(){ sec.classList.add('m-title'); }, 800);
-			setTimeout(function(){ sec.classList.add('m-video'); $('.markets__dead .dots-fx').css("opacity" ,"0"); $('.markets__dead .circle').css("opacity" ,"0"); }, 2200);
+			setTimeout(function(){ sec.classList.add('m-bones'); }, 700);
+			setTimeout(function(){ sec.classList.add('m-title'); }, 1500);
+			setTimeout(function(){ sec.classList.add('m-video'); $('.markets__dead .dots-fx').css("opacity" ,"0"); $('.markets__dead .circle').css("opacity" ,"0"); }, 4800);
 		}
 		if (window.IntersectionObserver){
 			var io = new IntersectionObserver(function(es){
@@ -2632,8 +2864,7 @@ $(document).ready(function(){
 		});
 	})();
 
-	(function(){
-		var wrap = document.querySelector('.reviews__wrapper');
+	function initLightRays(wrap){
 		var canvas = wrap && wrap.querySelector('.light-rays');
 		if (!canvas) return;
 		var ctx = canvas.getContext('2d');
@@ -2712,8 +2943,9 @@ $(document).ready(function(){
 		window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(layout, 120); });
 		if (reduce){ frame(0); return; }
 		if (window.IntersectionObserver){
-			new IntersectionObserver(function(es){ inView = es[0].isIntersecting; }).observe(wrap);
+			new IntersectionObserver(function(es){ inView = es[0].isIntersecting; }).observe(wrap.closest('.how__works') || wrap);
 		}
 		raf = requestAnimationFrame(loop);
-	})();
+	}
+	Array.prototype.forEach.call(document.querySelectorAll('.reviews__wrapper, .how__works .how-fx'), initLightRays);
 });

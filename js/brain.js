@@ -14,17 +14,22 @@
 	var CELL = 15;
 	var GREEN = '120,255,170';
 
+	var fog = document.createElement('canvas');
+	fog.className = 'brain-fog';
+	fog.setAttribute('aria-hidden', 'true');
+	media.insertBefore(fog, brainImg.nextSibling);
+	var fctx = fog.getContext('2d');
 	var canvas = document.createElement('canvas');
-	canvas.className = 'brain-fog';
+	canvas.className = 'brain-glyphs';
 	canvas.setAttribute('aria-hidden', 'true');
-	media.insertBefore(canvas, brainImg.nextSibling);
+	media.insertBefore(canvas, fog.nextSibling);
 	var ctx = canvas.getContext('2d');
 
 	var pop = document.createElement('div');
 	pop.className = 'brain-cards-layer';
 	media.appendChild(pop);
 
-	var W = 0, H = 0, COLS = 0, ROWS = 0, CELLX = CELL, CELLY = CELL;
+	var W = 0, H = 0, DPR = 1, COLS = 0, ROWS = 0, CELLX = CELL, CELLY = CELL;
 	var cells = null;
 	var ready = false;
 	var raf = 0, last = 0, t = 0, inView = true;
@@ -42,19 +47,23 @@
 	var veil = document.createElement('canvas');
 	var vctx = veil.getContext('2d');
 	var veilData = null;
-	var tmp = document.createElement('canvas');
-	var tctx = tmp.getContext('2d');
+
 
 	function build() {
 		var r = brainImg.getBoundingClientRect();
 		W = Math.round(r.width); H = Math.round(r.height);
 		if (!W || !H) return;
-		canvas.width = W; canvas.height = H;
+		DPR = Math.min(window.devicePixelRatio || 1, 2);
+		canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
 		var mr = media.getBoundingClientRect();
 		canvas.style.width = r.width + 'px';
 		canvas.style.height = r.height + 'px';
 		canvas.style.left = (r.left - mr.left) + 'px';
 		canvas.style.top = (r.top - mr.top) + 'px';
+		fog.style.width = canvas.style.width;
+		fog.style.height = canvas.style.height;
+		fog.style.left = canvas.style.left;
+		fog.style.top = canvas.style.top;
 
 		var gw, gh, rgb;
 		var inl = window.__BRAIN_RGB;
@@ -63,6 +72,23 @@
 			var bin = atob(inl.b64);
 			rgb = new Uint8Array(gw * gh * 3);
 			for (var z = 0; z < rgb.length; z++) rgb[z] = bin.charCodeAt(z);
+			// denser glyph grid: bilinear-upsample the baked colour grid so the
+			// brain carries more, smaller letters
+			var SC = 1.4;
+			var gw2 = Math.round(gw * SC), gh2 = Math.round(gh * SC);
+			var up = new Uint8Array(gw2 * gh2 * 3);
+			for (var uy = 0; uy < gh2; uy++) {
+				var fy = uy / SC, y0 = Math.min(gh - 1, fy | 0), y1 = Math.min(gh - 1, y0 + 1), wy = fy - y0;
+				for (var ux = 0; ux < gw2; ux++) {
+					var fx = ux / SC, x0 = Math.min(gw - 1, fx | 0), x1 = Math.min(gw - 1, x0 + 1), wx = fx - x0;
+					for (var ch2 = 0; ch2 < 3; ch2++) {
+						var v00 = rgb[(y0 * gw + x0) * 3 + ch2], v10 = rgb[(y0 * gw + x1) * 3 + ch2];
+						var v01 = rgb[(y1 * gw + x0) * 3 + ch2], v11 = rgb[(y1 * gw + x1) * 3 + ch2];
+						up[(uy * gw2 + ux) * 3 + ch2] = (v00 * (1 - wx) + v10 * wx) * (1 - wy) + (v01 * (1 - wx) + v11 * wx) * wy;
+					}
+				}
+			}
+			gw = gw2; gh = gh2; rgb = up;
 		} else {
 			gw = Math.ceil(W / CELL); gh = Math.ceil(H / CELL);
 			sampler.width = gw; sampler.height = gh;
@@ -77,7 +103,7 @@
 		CELLX = W / COLS; CELLY = H / ROWS;
 		veil.width = COLS; veil.height = ROWS;
 		veilData = vctx.createImageData(COLS, ROWS);
-		tmp.width = 32; tmp.height = Math.max(8, Math.round(32 * ROWS / COLS));
+		fog.width = 96; fog.height = Math.max(24, Math.round(96 * ROWS / COLS));
 		ctx.font = '700 ' + Math.round(Math.max(CELLX, CELLY)) + 'px ui-monospace, Menlo, Consolas, monospace';
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
@@ -98,6 +124,7 @@
 					r: Math.min(255, Math.round(R * boost + 30)),
 					g: Math.min(255, Math.round(G * boost + 70)),
 					bl: Math.min(255, Math.round(B * boost + 30)),
+					r0: R, g0: G, b0: B,
 					seed: (i * 37 + j * 101 + i * j) % CHARS.length,
 					ph: ((i * 13 + j * 29) % 100) / 100 * Math.PI * 2
 				});
@@ -148,17 +175,16 @@
 			if (iconHole && iconStrength > 0.01) hf = Math.min(hf, holeAt(x, y, iconHole.x, iconHole.y, ICON_R, iconStrength));
 			c.hf = hf;
 			var vi = (c.j * COLS + c.i) * 4;
-			vd[vi] = 3; vd[vi + 1] = 12; vd[vi + 2] = 8;
-			vd[vi + 3] = Math.round(Math.min(1, c.b * 1.15) * hf * 200);
+			vd[vi] = c.r0; vd[vi + 1] = c.g0; vd[vi + 2] = c.b0;
+			vd[vi + 3] = Math.round(Math.min(1, c.b * 1.1) * hf * 220);
 		}
 		vctx.putImageData(veilData, 0, 0);
 
-		tctx.clearRect(0, 0, tmp.width, tmp.height);
-		tctx.imageSmoothingEnabled = true;
-		tctx.drawImage(veil, 0, 0, COLS, ROWS, 0, 0, tmp.width, tmp.height);
+		fctx.clearRect(0, 0, fog.width, fog.height);
+		fctx.imageSmoothingEnabled = true;
+		fctx.drawImage(veil, 0, 0, COLS, ROWS, 0, 0, fog.width, fog.height);
+		ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 		ctx.clearRect(0, 0, W, H);
-		ctx.imageSmoothingEnabled = true;
-		ctx.drawImage(tmp, 0, 0, tmp.width, tmp.height, 0, 0, W, H);
 
 		ctx.shadowColor = 'rgba(0,255,150,0.9)';
 		ctx.shadowBlur = 5;
@@ -183,8 +209,8 @@
 
 	media.addEventListener('mousemove', function (e) {
 		var r = canvas.getBoundingClientRect();
-		var sx = r.width ? canvas.width / r.width : 1;
-		var sy = r.height ? canvas.height / r.height : 1;
+		var sx = r.width ? W / r.width : 1;
+		var sy = r.height ? H / r.height : 1;
 		mouse.tx = (e.clientX - r.left) * sx;
 		mouse.ty = (e.clientY - r.top) * sy;
 		mouse.on = true;
@@ -194,8 +220,8 @@
 	function iconCanvasPos(icon) {
 		var ir = icon.getBoundingClientRect();
 		var cr = canvas.getBoundingClientRect();
-		var sx = cr.width ? canvas.width / cr.width : 1;
-		var sy = cr.height ? canvas.height / cr.height : 1;
+		var sx = cr.width ? W / cr.width : 1;
+		var sy = cr.height ? H / cr.height : 1;
 		return {
 			x: (ir.left + ir.width / 2 - cr.left) * sx,
 			y: (ir.top + ir.height / 2 - cr.top) * sy
@@ -226,8 +252,8 @@
 		var cardH = card.offsetHeight || 120;
 		var gap = 18;
 		var left, top;
-		if (iconCX < mr.width / 2) left = iconCX + ir.width / 2 + gap;
-		else left = iconCX - ir.width / 2 - gap - cardW;
+		if (iconCX < mr.width / 2) left = iconCX - ir.width / 2 - gap - cardW;
+		else left = iconCX + ir.width / 2 + gap;
 		top = iconCY - cardH / 2;
 		left = Math.max(10, Math.min(left, mr.width - cardW - 10));
 		top = Math.max(10, Math.min(top, mr.height - cardH - 10));
@@ -269,7 +295,7 @@
 		window.addEventListener('load', build);
 		start();
 	}
-	function disable() { stop(); closeCard(); ctx && ctx.clearRect(0, 0, W, H); }
+	function disable() { stop(); closeCard(); ctx && ctx.clearRect(0, 0, canvas.width, canvas.height); fctx && fctx.clearRect(0, 0, fog.width, fog.height); }
 
 	if (mq.matches) enable();
 	(mq.addEventListener ? mq.addEventListener('change', onMq) : mq.addListener(onMq));
