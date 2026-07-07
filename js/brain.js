@@ -48,7 +48,6 @@
 	var vctx = veil.getContext('2d');
 	var veilData = null;
 
-
 	function build() {
 		var r = brainImg.getBoundingClientRect();
 		W = Math.round(r.width); H = Math.round(r.height);
@@ -72,8 +71,6 @@
 			var bin = atob(inl.b64);
 			rgb = new Uint8Array(gw * gh * 3);
 			for (var z = 0; z < rgb.length; z++) rgb[z] = bin.charCodeAt(z);
-			// denser glyph grid: bilinear-upsample the baked colour grid so the
-			// brain carries more, smaller letters
 			var SC = 1.4;
 			var gw2 = Math.round(gw * SC), gh2 = Math.round(gh * SC);
 			var up = new Uint8Array(gw2 * gh2 * 3);

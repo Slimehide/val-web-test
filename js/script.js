@@ -87,9 +87,6 @@ $(document).ready(function(){
 					try {
 						this.pause();
 						this.muted = true;
-						/* drop the media buffers of every parked clip — with 20+
-						   <video> in the strip Chrome otherwise keeps a decoder
-						   per element and the page slowly grinds down */
 						if (this.getAttribute('src')){ this.removeAttribute('src'); this.load(); }
 					} catch (e) {}
 				});
@@ -147,8 +144,6 @@ $(document).ready(function(){
 				if (!v) return;
 				auto = false;
 				clearTimeout(advTimer);
-				// clicking play on a side slide swipes it to the centre first
-				// (and parks every other clip)
 				var $slide = $(this).closest('.slick-slide');
 				var rawIdx = parseInt($slide.attr('data-slick-index'), 10);
 				if (!isNaN(rawIdx)){
@@ -447,8 +442,6 @@ $(document).ready(function(){
 			var vh = window.innerHeight || 800;
 			var scrollable = r.height - vh;
 			var p = scrollable > 0 ? Math.min(1, Math.max(0, -r.top / scrollable)) : 1;
-			// scrub, don't trigger: each float gets a 0..1 slice of the pin
-			// scroll, so the reveal advances/rewinds with the scroll itself
 			var seg = 1 / (floats.length + 0.7);
 			for (var i = 0; i < floats.length; i++){
 				var q = (p - (i + 0.15) * seg) / (seg * 0.85);
@@ -1003,8 +996,6 @@ $(document).ready(function(){
 		}
 
 		resize();
-		/* rebuilding the field re-rasterises the SVG + getImageData — far too
-		   heavy to run on every resize event, so coalesce the bursts */
 		var rzT = null;
 		function queueResize(){ clearTimeout(rzT); rzT = setTimeout(resize, 150); }
 		$(window).on('resize', queueResize);
@@ -1032,9 +1023,6 @@ $(document).ready(function(){
 	if ($('.team__hero .ascii-team').length){
 		initAsciiBg($('.team__hero .ascii-team')[0], { src: 'img/team-back.svg', place: 'auto-topleft' });
 	}
-	if ($('.reviews__wrapper .ascii-dots').length){
-		initAsciiBg($('.reviews__wrapper .ascii-dots')[0], { src: 'img/reviews-dots.svg', place: 'auto-center' });
-	}
 	if ($('.features .ascii-features').length){
 		initAsciiBg($('.features .ascii-features')[0], {
 			src: 'img/dots-features.svg', place: 'auto-center',
@@ -1054,7 +1042,7 @@ $(document).ready(function(){
 		var SRC = 9;
 		var N = 12;
 		var R = 268;
-		var DOCK = 180;   // recalibrated to the pill slot by measureSlot()
+		var DOCK = 180;
 		var nodes = [];
 		for (var i = 0; i < N; i++){
 			var nd = document.createElement('div');
@@ -1069,14 +1057,10 @@ $(document).ready(function(){
 		var rot = 0, inView = false, timer = null;
 
 		function norm(a){ return ((a % 360) + 360) % 360; }
-		// the pill sits in normal flow, so measure where its right slot
-		// actually is and park the docked ball exactly in it
 		var slot = null;
 		function measureSlot(){
 			var bb = box.getBoundingClientRect();
 			if (!bb.width || !nodes.length){ slot = null; return; }
-			// ancestors may flip/scale the orbit — derive the local->viewport
-			// matrix empirically with probe transforms, then invert it
 			var probe = nodes[0];
 			var keepTr = probe.style.transform;
 			probe.style.transition = 'none';
@@ -1196,6 +1180,20 @@ $(document).ready(function(){
 			pointerHost: document.querySelector('.workflows__wrapper')
 		});
 	}
+	if ($('.cases__list .cases-dots canvas').length){
+		initAsciiBg($('.cases__list .cases-dots canvas')[0], {
+			src: 'img/case-dots.svg', svgDots: true,
+			color: '255,255,255', floor: 0, gain: 1,
+			pointerHost: document.querySelector('.cases__list')
+		});
+	}
+	if ($('.reviews__wrapper > .dots canvas').length){
+		initAsciiBg($('.reviews__wrapper > .dots canvas')[0], {
+			src: 'img/dots-reviews-svg.svg', svgDots: true,
+			color: '255,255,255', floor: 0.06, gain: 1,
+			pointerHost: document.querySelector('.reviews__wrapper')
+		});
+	}
 	$('.faq__wrapper .faq-field canvas').each(function(){
 		initAsciiBg(this, {
 			fill: true, cell: 24, dotScale: 0.6,
@@ -1294,8 +1292,6 @@ $(document).ready(function(){
 		var imgTop = section.querySelector('.box-screen .media-box>.screen-top');
 		var n = elems.length;
 		if (!n || !outer || !floatEl) return;
-		// the whole block — title, copy and the steps — pins as one stack, so
-		// the section sticks from its title instead of just the steps
 		var stack = outer.querySelector(':scope > .pin-stack');
 		if (!stack){
 			stack = document.createElement('div');
@@ -1869,6 +1865,7 @@ $(document).ready(function(){
 			var $cs = $('.more__case--studies .cases-slider');
 			if (!$cs.length || $cs.hasClass('slick-initialized')) return;
 			$cs.find('.slide').removeClass('long').addClass('short');
+			$cs.addClass('cs-live');
 			$cs.slick({
 				slidesToShow:1,
 				variableWidth:true,
@@ -1885,7 +1882,7 @@ $(document).ready(function(){
 				    }
 				  ]
 			});
-			var lock = 0, posRaf = null, posUntil = 0;
+			var posRaf = null, posUntil = 0;
 			function pumpPositions(){
 				posUntil = Date.now() + 750;
 				if (posRaf) return;
@@ -1895,27 +1892,17 @@ $(document).ready(function(){
 					else posRaf = null;
 				})();
 			}
-			function openSlide(idx, go){
-				var slick = $cs.slick('getSlick');
-				var count = slick.slideCount;
+			function openSlide(idx){
+				var count = $cs.slick('getSlick').slideCount;
 				var real = ((idx % count) + count) % count;
 				$cs.find('.slick-slide').each(function(){
 					var di = parseInt(this.getAttribute('data-slick-index'), 10);
-					var on = ((di % count) + count) % count === real;
-					this.classList.toggle('cs-open', on);
+					this.classList.toggle('cs-open', ((di % count) + count) % count === real);
 				});
-				if (go) $cs.slick('slickGoTo', real);
 				pumpPositions();
 			}
-			$cs.on('mouseenter', '.slick-slide', function(){
-				if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-				if (window.innerWidth <= 991) return;
-				if (this.classList.contains('cs-open')) return;
-				if (Date.now() < lock) return;
-				lock = Date.now() + 700;
-				openSlide(parseInt(this.getAttribute('data-slick-index'), 10), true);
-			});
-			$cs.on('afterChange', function(e, slick, cur){ openSlide(cur, false); });
+			$cs.on('afterChange', function(e, slick, cur){ openSlide(cur); });
+			openSlide($cs.slick('slickCurrentSlide'));
 		})();
 
 		$(window).on('resize' ,function(){
@@ -1942,11 +1929,24 @@ $(document).ready(function(){
 	}
 
 	if ($('.marquee__wrapper').length) {
-		$('.marquee__wrapper ul').webTicker({
-			startEmpty:false,
-			hoverpause:false,
-			duplicate:true,
-		})
+		$('.marquee__wrapper').each(function(){
+			var $ul = $(this).find('ul');
+			if (!$ul.length) return;
+			var reverse = this.classList.contains('reverse');
+			var multi = this.closest('.trusted__wrapper.multiple');
+			if (multi){
+				var rows = Array.prototype.slice.call(multi.querySelectorAll('.marquee__wrapper'));
+				var shift = rows.indexOf(this) * 2;
+				for (var k = 0; k < shift; k++) $ul.append($ul.children('li').first());
+			}
+			$ul.webTicker({
+				startEmpty:false,
+				hoverpause:false,
+				duplicate:true,
+				direction: reverse ? 'right' : 'left',
+				speed: 50
+			});
+		});
 	}
 
 	 const $ta = $('.ta');
@@ -2001,10 +2001,11 @@ $(document).ready(function(){
 		var icons = Array.prototype.slice.call(story.querySelectorAll('.icon-float'));
 		var logoPin = story.querySelector('.story-logo-pin');
 		var amps = [70, 120, 45];
+		var iconBases = null;
 		var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-		var pinned = !reduce;
-		if (pinned) story.classList.add('story-pin');
+		var pinned = false;
+		window.addEventListener('resize', function(){ iconBases = null; });
 
 		var ticking = false;
 		function update(){
@@ -2018,12 +2019,14 @@ $(document).ready(function(){
 				prog = scrollable > 0 ? (-rect.top) / scrollable : 0;
 			} else if (txt){
 				var trect = txt.getBoundingClientRect();
-				var startLine = vh * 0.85, endLine = vh * 0.30;
+				var startLine = vh * 0.68, endLine = vh * 0.30;
 				var span = trect.height + (startLine - endLine);
 				prog = (startLine - trect.top) / span;
 			} else {
 				prog = 0;
 			}
+			var endProg = 1 - (rect.bottom - vh) / (vh * 0.5);
+			if (endProg > prog) prog = endProg;
 			if (prog < 0) prog = 0; else if (prog > 1) prog = 1;
 
 			if (words.length){
@@ -2040,9 +2043,18 @@ $(document).ready(function(){
 
 			var vw = window.innerWidth || 1440;
 			var ampScale = vw <= 767 ? 0.3 : (vw <= 1200 ? 0.55 : 1);
+			if (!iconBases){
+				iconBases = icons.map(function(ic){
+					var ir = ic.getBoundingClientRect();
+					return ir.top - rect.top;
+				});
+			}
 			for (var j = 0; j < icons.length; j++){
+				if (icons[j].offsetParent === null) continue;
 				var dir = (j % 2 === 0) ? 1 : -1;
-				var y = (prog - 0.5) * amps[j % amps.length] * 1.6 * dir * ampScale;
+				var want = -rect.top + vh * (0.34 + 0.12 * (j % 3)) - iconBases[j];
+				var maxY = rect.height - iconBases[j] - 140;
+				var y = Math.max(0, Math.min(want, Math.max(0, maxY)));
 				var x = Math.sin(prog * Math.PI + j * 1.3) * 16 * dir * ampScale;
 				icons[j].style.translate = x.toFixed(1) + 'px ' + y.toFixed(1) + 'px';
 			}
@@ -2804,7 +2816,7 @@ $(document).ready(function(){
 
 	(function(){
 		var FADE = 1.0;
-		var vids = document.querySelectorAll('.cta__wrapper.cta-team video[loop], .hero__middle.hero-typing video[loop]');
+		var vids = document.querySelectorAll('.cta__wrapper.cta-team video[loop], .hero__middle.hero-typing video[loop], .hero__brain video[loop]');
 		Array.prototype.forEach.call(vids, function(v){
 			if (v.__seam || !v.muted && !v.hasAttribute('muted')) return;
 			v.__seam = true;
@@ -2948,4 +2960,80 @@ $(document).ready(function(){
 		raf = requestAnimationFrame(loop);
 	}
 	Array.prototype.forEach.call(document.querySelectorAll('.reviews__wrapper, .how__works .how-fx'), initLightRays);
+
 });
+
+(function(){
+	if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	if (window.matchMedia && !matchMedia('(any-pointer: fine)').matches) return;
+
+	var doc = document.documentElement;
+	doc.style.scrollBehavior = 'auto';
+	var target = window.scrollY || doc.scrollTop || 0;
+	var current = target;
+	var lastSet = -1;
+	var settled = true;
+
+	function maxScroll(){
+		return Math.max(0, doc.scrollHeight - window.innerHeight);
+	}
+	function ownScrollable(el, dy){
+		while (el && el !== document.body && el !== doc){
+			if (el.nodeType === 1 && el.scrollHeight > el.clientHeight + 1){
+				var oy = getComputedStyle(el).overflowY;
+				if (oy === 'auto' || oy === 'scroll'){
+					if (dy > 0 && el.scrollTop + el.clientHeight < el.scrollHeight - 1) return true;
+					if (dy < 0 && el.scrollTop > 0) return true;
+				}
+			}
+			el = el.parentNode;
+		}
+		return false;
+	}
+
+	var lastT = 0;
+	function frame(t){
+		requestAnimationFrame(frame);
+		var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0.016;
+		lastT = t;
+		var actual = window.scrollY || doc.scrollTop || 0;
+		if (lastSet >= 0 && Math.abs(actual - lastSet) > 1.5){
+			current = target = actual;
+			lastSet = actual;
+			settled = true;
+			return;
+		}
+		var diff = target - current;
+		if (diff > -0.1 && diff < 0.1){
+			if (!settled){
+				current = target;
+				window.scrollTo(0, Math.round(current));
+				lastSet = window.scrollY || doc.scrollTop || 0;
+				settled = true;
+			}
+			return;
+		}
+		settled = false;
+		current += diff * (1 - Math.exp(-dt * 6));
+		window.scrollTo(0, current);
+		lastSet = window.scrollY || doc.scrollTop || 0;
+	}
+
+	window.addEventListener('wheel', function(e){
+		if (e.ctrlKey || e.defaultPrevented) return;
+		var dy = e.deltaY;
+		if (e.deltaMode === 1) dy *= 16; else if (e.deltaMode === 2) dy *= window.innerHeight;
+		if (!dy) return;
+		if (ownScrollable(e.target, dy)) return;
+		e.preventDefault();
+		if (settled){
+			var actual = window.scrollY || doc.scrollTop || 0;
+			if (Math.abs(actual - current) > 1.5) current = target = actual;
+		}
+		target += dy;
+		var m = maxScroll();
+		if (target < 0) target = 0; else if (target > m) target = m;
+	}, { passive: false });
+
+	requestAnimationFrame(frame);
+})();

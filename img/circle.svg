@@ -1,5 +1,0 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="256" cy="256" r="254.5" stroke="white" stroke-opacity="0.3" style="mix-blend-mode:overlay" stroke-width="3"/>
-<circle cx="256" cy="256" r="254.5" stroke="white" stroke-opacity="0.1" stroke-width="3"/>
-<path d="M256 -1.11901e-05C310.062 -1.35532e-05 362.736 17.1149 406.473 48.8916C450.21 80.6684 482.764 125.476 499.47 176.892L496.622 177.817C480.111 127.003 447.938 82.7198 404.712 51.3148C361.487 19.9098 309.429 2.99516 256 2.99517L256 -1.11901e-05Z" fill="#00FF8A"/>
-</svg>
