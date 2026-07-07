@@ -1309,9 +1309,17 @@ $(document).ready(function(){
 		var mq = window.matchMedia('(max-width: 991px)');
 		function clamp(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
 
+		var shownSrc = imgBase ? imgBase.getAttribute('src') : '';
+		var pendingSrc = null;
 		function setImage(idx){
 			if (!imgBase || !imgTop) return;
 			var src = elems[idx].getAttribute('data-screen') || defaultSrc;
+			if (src === (pendingSrc || shownSrc)) return;
+			if (pendingSrc){
+				shownSrc = pendingSrc;
+				imgBase.setAttribute('src', pendingSrc);
+			}
+			pendingSrc = src;
 			imgTop.style.transition = 'none';
 			imgTop.style.opacity = '0';
 			imgTop.style.transform = 'translateY(22px)';
@@ -1324,8 +1332,10 @@ $(document).ready(function(){
 		}
 		if (imgTop){
 			imgTop.addEventListener('transitionend', function(e){
-				if (e.propertyName !== 'opacity' || imgTop.style.opacity !== '1') return;
-				imgBase.setAttribute('src', imgTop.getAttribute('src'));
+				if (e.propertyName !== 'opacity' || imgTop.style.opacity !== '1' || !pendingSrc) return;
+				shownSrc = pendingSrc;
+				pendingSrc = null;
+				imgBase.setAttribute('src', shownSrc);
 				imgTop.style.transition = 'none';
 				imgTop.style.opacity = '0';
 			});

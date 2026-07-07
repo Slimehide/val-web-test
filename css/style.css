@@ -1518,7 +1518,7 @@ header .outer__header .right>.btns>.sign-in{
 	display: flex;
 	justify-content: center;
 	flex-wrap:wrap;
-	max-width:430px;
+	max-width:440px;
 	gap:15px;
 }
 .cta__wrapper .social__buttons{
@@ -13094,4 +13094,25 @@ span.bold{
 	.our__story .desc .story-logo-pin>img{
 		width: 30px;
 	}
+}
+
+.cases__list .main__list>.el:before,
+.cases__list .main__list>.el.blur:before{
+	transition: backdrop-filter .5s ease, background-color .5s ease;
+}
+.cases__list .main__list>.el:hover:before,
+.cases__list .main__list>.el.blur:hover:before{
+	backdrop-filter: blur(0px);
+	background-color: rgba(255,255,255,0);
+}
+
+.resources__list--wrapper .resources__list>ul>li>a.current{
+	background: linear-gradient(135deg, rgba(0,255,138,.28) 0%, rgba(0,255,138,.10) 55%, rgba(0,255,138,.04) 100%);
+}
+.resources__list--wrapper .resource__el{
+	max-width: 1330px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 25px;
+	padding-right: 25px;
 }
