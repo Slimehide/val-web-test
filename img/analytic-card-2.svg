@@ -1,0 +1,21 @@
+<svg width="280" height="120" viewBox="0 48 280 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#cclip)">
+<rect y="48" width="280" height="120" rx="18" fill="white" fill-opacity="0.1" style="mix-blend-mode:overlay"/>
+<rect y="48" width="280" height="120" rx="18" fill="url(#cgrad)" fill-opacity="0.05"/>
+<path d="M0 120C16 112 28 132 44 138C60 144 74 124 90 116C106 108 118 128 134 132C150 136 164 110 180 100C196 90 212 106 228 100C244 94 262 82 280 78L280 168L0 168Z" fill="url(#agrad)"/>
+<path d="M0 120C16 112 28 132 44 138C60 144 74 124 90 116C106 108 118 128 134 132C150 136 164 110 180 100C196 90 212 106 228 100C244 94 262 82 280 78" stroke="#00FF8A" stroke-width="2" fill="none" stroke-linecap="round"/>
+<text x="20" y="76" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" fill-opacity="0.6">Avg. Open Rate</text>
+<g transform="translate(20,86)"><path d="M4 12L9 7L12 10L17 4" stroke="#00FF8A" stroke-width="1.6" fill="none"/><path d="M13.5 4H17V7.5" stroke="#00FF8A" stroke-width="1.6" fill="none"/></g>
+<text x="44" y="100" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="600" fill="white" fill-opacity="0.92">38%</text>
+</g>
+<rect x="0.5" y="48.5" width="279" height="119" rx="17.5" stroke="white" stroke-opacity="0.14"/>
+<defs>
+<clipPath id="cclip"><rect y="48" width="280" height="120" rx="18" fill="white"/></clipPath>
+<linearGradient id="cgrad" x1="140" y1="48" x2="140" y2="168" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="agrad" x1="140" y1="90" x2="140" y2="168" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00FF8A" stop-opacity="0.28"/><stop offset="1" stop-color="#00FF8A" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>
